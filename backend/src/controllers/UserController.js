@@ -70,7 +70,6 @@ export const registerUser = async (req, res) => {
       token: generateToken(newUser._id),
     });
   } catch (error) {
-    console.error("Registration error:", error.message);
     return res
       .status(500)
       .json({ success: false, message: "Registration failed" });
@@ -109,7 +108,6 @@ export const loginUser = async (req, res) => {
       token: generateToken(user._id),
     });
   } catch (error) {
-    console.error("Login error:", error.message);
     return res.status(500).json({ success: false, message: "Login failed" });
   }
 };
@@ -179,14 +177,6 @@ export const updateUser = async (req, res) => {
       user: updatedUser,
     });
   } catch (error) {
-    console.error("Update error:", error.message);
-
-    if (error.code === 11000) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Email or Mobile already exists" });
-    }
-
     return res.status(500).json({ success: false, message: "Update failed" });
   }
 };
@@ -254,7 +244,6 @@ export const sendVerificationOtpEmail = async (req, res) => {
 
     return res.json({ success: true, message: "OTP sent successfully" });
   } catch (error) {
-    console.error("OTP sending error:", error.message);
     return res
       .status(500)
       .json({ success: false, message: "OTP sending failed" });
@@ -299,3 +288,39 @@ export const changePassword = async (req, res) => {
       .json({ success: false, message: "Password change failed" });
   }
 };
+
+
+//   const { otp, email } = req.body;
+
+//   console.log(otp, email);
+
+//   if (!otp || !email) {
+//     return res
+//       .status(400)
+//       .json({ success: false, message: "All fields are required" });
+//   }
+
+//   try {
+//     const admin = await Admin.findOne({ email });
+
+//     if (!admin) {
+//       return res
+//         .status(404)
+//         .json({ success: false, message: "Admin not found" });
+//     }
+
+//     if (String(admin.otp) === String(otp)) {
+//       return res.json({
+//         success: true,
+//         message: "OTP verified successfully",
+//       });
+//     } else {
+//       return res.json({ success: false, message: "Invalid OTP" });
+//     }
+//   } catch (error) {
+//     console.error("OTP Verification Error:", error);
+//     return res
+//       .status(500)
+//       .json({ success: false, message: "OTP verification failed" });
+//   }
+// };

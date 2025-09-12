@@ -1,12 +1,6 @@
-import Navbar from "@/components/ui/Navbar";
 
 const AppLayout = ({ children }) => {
-  return (
-    <main>
-      <Navbar />
-      {children}
-    </main>
-  );
+  return <main className="px-4 md:px-8 lg:px-16 py-2">{children}</main>;
 };
 
 export default AppLayout;

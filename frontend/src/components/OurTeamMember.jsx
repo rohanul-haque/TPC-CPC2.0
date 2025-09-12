@@ -5,13 +5,13 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
-import SectionTitle from "./SectionTitle";
-import { useContext, useEffect, useState } from "react";
-import axios from "axios";
-import { AppContext } from "@/contexts/AppContext";
-import toast from "react-hot-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AppContext } from "@/contexts/AppContext";
+import axios from "axios";
+import Autoplay from "embla-carousel-autoplay";
+import { useContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import SectionTitle from "./SectionTitle";
 
 const OurTeamMember = () => {
   const [teamMemberData, setTeamMemberData] = useState([]);

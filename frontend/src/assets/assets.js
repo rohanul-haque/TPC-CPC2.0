@@ -601,7 +601,8 @@ export const testimonials = [
     name: "Jonathan Yombo",
     title: "Software Engineer",
     text: "Tailus is really extraordinary and very practical, no need to break your head. A real gold mine.",
-    image: "https://i.postimg.cc/W1rCvYnT/nazmul-hossain.jpg",
+    image:
+      "https://i.pinimg.com/1200x/c2/4e/27/c24e271f2f992fd7e62e8c1e8d9b3e2f.jpg",
   },
   {
     name: "Yves Kakume",

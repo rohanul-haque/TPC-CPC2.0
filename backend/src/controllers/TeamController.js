@@ -6,8 +6,6 @@ export const createTeam = async (req, res) => {
   const { name, role } = req.body;
   const memberProfile = req.file;
 
-  console.log(name, role, memberProfile);
-
   if (!name || !role || !memberProfile) {
     return res
       .status(400)

@@ -1,0 +1,22 @@
+.blog-description h1,
+h12,
+h3,
+h4,
+h5,
+h6 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 10px 0px;
+}
+
+.blog-description h1,
+.blog-description p,
+.blog-description li {
+  margin: 10px 0px;
+}
+
+.blog-description em,
+.blog-description i,
+.blog-description strong {
+  background-color: yellow;
+}

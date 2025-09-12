@@ -1,6 +1,7 @@
 import express from "express";
 import {
   changePassword,
+  checkValidOtp,
   getAdminProfile,
   loginAdmin,
   registerAdmin,
@@ -15,7 +16,7 @@ const router = express.Router();
 router.post("/register", ImageUploader.single("adminProfile"), registerAdmin);
 router.post("/login", loginAdmin);
 router.get("/data", AuthMiddleware, getAdminProfile);
-router.get(
+router.put(
   "/update",
   AuthMiddleware,
   ImageUploader.single("adminProfile"),
@@ -23,5 +24,5 @@ router.get(
 );
 router.post("/send-otp", sendVerificationOtpEmail);
 router.post("/change-password", changePassword);
-
+router.post("/check-otp", checkValidOtp);
 export default router;

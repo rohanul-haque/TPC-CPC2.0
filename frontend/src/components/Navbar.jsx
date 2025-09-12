@@ -54,7 +54,7 @@ const Navbar = () => {
 
   useEffect(() => {
     fetchUserData();
-  }, [fetchUserData]);
+  }, []);
 
   return (
     <header className="w-full sticky top-0 z-50">

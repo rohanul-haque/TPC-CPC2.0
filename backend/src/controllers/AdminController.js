@@ -214,6 +214,40 @@ export const sendVerificationOtpEmail = async (req, res) => {
   }
 };
 
+export const checkValidOtp = async (req, res) => {
+  const { otp, email } = req.body;
+
+  if (!otp || !email) {
+    return res.status(400).json({
+      success: false,
+      message: "All fields are required",
+    });
+  }
+
+  try {
+    const admin = await Admin.findOne({ email });
+
+    if (!admin) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Admin not found" });
+    }
+
+    if (admin.otp !== Number(otp)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid OTP",
+      });
+    }
+
+    return res.status(200).json({ success: true, message: "OTP is valid" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "Failed to check OTP" });
+  }
+};
+
 export const changePassword = async (req, res) => {
   try {
     const { email, otp, newPassword } = req.body;

@@ -1,4 +1,3 @@
-import { assets, events } from "@/assets/assets";
 import SectionTitle from "@/components/SectionTitle";
 import {
   Pagination,
@@ -8,26 +7,30 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton"; // ✅ ShadCN skeleton
+import { AppContext } from "@/contexts/AppContext";
+import axios from "axios";
+import { useContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const EventPage = () => {
+  const [eventList, setEventList] = useState([]);
+  const [loading, setLoading] = useState(true); // ✅ loading state
   const [currentPage, setCurrentPage] = useState(1);
   const eventsPerPage = 6;
 
-  const totalPages = Math.ceil(events.length / eventsPerPage);
+  const totalPages = Math.ceil(eventList.length / eventsPerPage);
 
-  // Scroll to event-list section top
+  const { backendUrl } = useContext(AppContext);
+
   const scrollToTop = () => {
     const section = document.getElementById("event-list");
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+    if (section) section.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  // Pagination logic
   const indexOfLastEvent = currentPage * eventsPerPage;
   const indexOfFirstEvent = indexOfLastEvent - eventsPerPage;
-  const currentEvents = events.slice(indexOfFirstEvent, indexOfLastEvent);
+  const currentEvents = eventList.slice(indexOfFirstEvent, indexOfLastEvent);
 
   const formatDateTime = (isoString) => {
     const options = {
@@ -41,73 +44,124 @@ const EventPage = () => {
     return new Date(isoString).toLocaleString(undefined, options);
   };
 
+  const fetchEventDataList = async () => {
+    try {
+      setLoading(true);
+      const { data } = await axios.get(`${backendUrl}/event/list`);
+      if (data.success) {
+        setEventList(data.eventList);
+      }
+    } catch (error) {
+      toast.error("Failed to fetch events");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEventDataList();
+  }, []);
+
   return (
     <section className="mt-6" id="event-list">
       <SectionTitle
         title="Our Events 📅🎉"
         paragraph={`🚀 Dive into exciting coding contests, workshops, and webinars! 💻 Join TPI CPC events to learn, innovate, and level up your tech skills! 🌟`}
       />
+
       <div className="w-full grid grid-cols-1 gap-6 mt-10">
-        {currentEvents.map((event) => (
-          <div
-            key={event.id}
-            className="flex items-center flex-col md:flex-row border border-gray-400/50 dark:border-gray-500/50 backdrop-blur-sm rounded-lg overflow-hidden relative"
-          >
-            {/* Status badge */}
+        {loading ? (
+          // ✅ Skeleton Loader (while fetching)
+          Array.from({ length: 3 }).map((_, i) => (
             <div
-              className="absolute right-0 top-0 bg-violet-500 py-1 px-2"
-              style={{ borderBottomLeftRadius: "10px" }}
+              key={i}
+              className="flex items-center flex-col md:flex-row border border-gray-400/50 dark:border-gray-500/50 rounded-lg overflow-hidden"
             >
-              <span className="text-sm font-medium text-white">
-                {event.status}
-              </span>
+              <Skeleton className="w-full md:w-[40%] h-48 bg-gray-400/70 dark:bg-gray-600" />
+              <div className="w-full md:w-[60%] p-6 space-y-3">
+                <Skeleton className="h-6 w-2/3 bg-gray-400/70 dark:bg-gray-600" />
+                <Skeleton className="h-4 w-1/2 bg-gray-400/70 dark:bg-gray-600" />
+                <Skeleton className="h-4 w-3/4 bg-gray-400/70 dark:bg-gray-600" />
+                <Skeleton className="h-4 w-1/3 bg-gray-400/70 dark:bg-gray-600" />
+              </div>
             </div>
-
-            {/* Event Image */}
-            <div className="w-full md:w-[40%] h-full">
-              <img
-                className="w-full h-full object-cover"
-                src={assets.event_image}
-                alt={event.title}
-              />
-            </div>
-
-            {/* Event Info */}
-            <div className="w-full md:w-[60%] p-6 h-full">
-              <h2 className="text-2xl font-semibold mb-3">{event.title}</h2>
-              <div className="flex items-center gap-3 mb-2">
-                <span className="font-semibold">Time:</span>
-                <span>
-                  {formatDateTime(event.startTime)} –{" "}
-                  {formatDateTime(event.endTime)}
+          ))
+        ) : eventList.length === 0 ? (
+          <div className="text-center py-20">
+            <img
+              src="/no-data.png"
+              alt="No events"
+              className="mx-auto w-40 h-40 opacity-70"
+              onError={(e) => (e.currentTarget.style.display = "none")}
+            />
+            <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mt-4">
+              No events found 🚫
+            </h2>
+            <p className="text-gray-500 dark:text-gray-400 mt-2">
+              Stay tuned! New events will be announced soon 🎉
+            </p>
+          </div>
+        ) : (
+          currentEvents.map((event) => (
+            <div
+              key={event._id} // ✅ fixed
+              className="flex items-center flex-col md:flex-row border border-gray-400/50 dark:border-gray-500/50 backdrop-blur-sm rounded-lg overflow-hidden relative"
+            >
+              {/* Status badge */}
+              <div
+                className="absolute right-0 top-0 bg-violet-500 py-1 px-2"
+                style={{ borderBottomLeftRadius: "10px" }}
+              >
+                <span className="text-sm font-medium text-white">
+                  {event.status}
                 </span>
               </div>
-              <p className="mb-2">{event.description}</p>
-              <p className="mb-2">
-                <span className="font-semibold">Event Type:</span>{" "}
-                <span>{event.type}</span>
-              </p>
-              <p className="mb-2">
-                <span className="font-semibold">Organizer:</span>{" "}
-                <span>{event.organizer}</span>
-              </p>
-              {event.collaboration && (
+
+              {/* Event Image */}
+              <div className="w-full md:w-[40%] h-full">
+                <img
+                  className="w-full h-full object-cover"
+                  src={event.eventImage}
+                  alt={event.title}
+                />
+              </div>
+
+              {/* Event Info */}
+              <div className="w-full md:w-[60%] p-6 h-full">
+                <h2 className="text-2xl font-semibold mb-3">{event.title}</h2>
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="font-semibold">Time:</span>
+                  <span>
+                    {formatDateTime(event.startTime)} –{" "}
+                    {formatDateTime(event.endTime)}
+                  </span>
+                </div>
+                <p className="mb-2">{event.description}</p>
                 <p className="mb-2">
-                  <span className="font-semibold">Collaboration:</span>{" "}
-                  <span>{event.collaboration}</span>
+                  <span className="font-semibold">Event Type:</span>{" "}
+                  <span>{event.eventType}</span>
                 </p>
-              )}
+                <p className="mb-2">
+                  <span className="font-semibold">Organizer:</span>{" "}
+                  <span>{event.organizer}</span>
+                </p>
+                {event.collaboration && (
+                  <p className="mb-2">
+                    <span className="font-semibold">Collaboration:</span>{" "}
+                    <span>{event.collaboration}</span>
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       {/* Pagination */}
-      {totalPages > 1 && (
+      {!loading && eventList.length > 0 && totalPages > 1 && (
         <div className="flex justify-center mt-8">
           <Pagination>
             <PaginationContent>
-              {/* Previous */}
               <PaginationItem>
                 <PaginationPrevious
                   onClick={() => {
@@ -122,7 +176,6 @@ const EventPage = () => {
                 />
               </PaginationItem>
 
-              {/* Page numbers */}
               {Array.from({ length: totalPages }, (_, i) => (
                 <PaginationItem key={i + 1}>
                   <PaginationLink
@@ -137,7 +190,6 @@ const EventPage = () => {
                 </PaginationItem>
               ))}
 
-              {/* Next */}
               <PaginationItem>
                 <PaginationNext
                   onClick={() => {

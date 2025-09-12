@@ -5,8 +5,6 @@ export const createAdvisor = async (req, res) => {
   const { name, role } = req.body;
   const advisorProfile = req.file;
 
-  console.log(name)
-
   if (!name || !role || !advisorProfile) {
     return res
       .status(400)
