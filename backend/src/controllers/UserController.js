@@ -204,7 +204,7 @@ export const sendVerificationOtpEmail = async (req, res) => {
     await user.save();
 
     const mailOptions = {
-      from: "mdrohanulhaquerohan368@gmail.com",
+      from: "tpicpc@gmail.com",
       to: email,
       subject: "🔐 Password Reset OTP - TPI CPC",
       html: `
@@ -288,7 +288,6 @@ export const changePassword = async (req, res) => {
       .json({ success: false, message: "Password change failed" });
   }
 };
-
 
 //   const { otp, email } = req.body;
 

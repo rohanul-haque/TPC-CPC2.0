@@ -169,7 +169,7 @@ export const sendVerificationOtpEmail = async (req, res) => {
     await admin.save();
 
     const mailOptions = {
-      from: "mdrohanulhaquerohan368@gmail.com",
+      from: "tpicpc@gmail.com",
       to: email,
       subject: "🔐 Password Reset OTP - Admin Panel",
       html: `
@@ -208,6 +208,7 @@ export const sendVerificationOtpEmail = async (req, res) => {
 
     return res.json({ success: true, message: "OTP sent successfully" });
   } catch (error) {
+    console.log(error)
     return res
       .status(500)
       .json({ success: false, message: "OTP sending failed" });
