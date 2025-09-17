@@ -1,4 +1,3 @@
-import { assets } from "@/assets/assets";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -10,18 +9,16 @@ const AboutPage = () => {
   return (
     <section className="mt-20">
       <div className="flex flex-col lg:flex-row items-center gap-10">
-        {/* Masonary Images */}
-        <div className="w-full lg:w-1/2 grid grid-cols-2 gap-4">
-          {[assets.about, assets.about_1, assets.about_2, assets.about_3].map(
-            (img, i) => (
-              <img
-                key={i}
-                className="rounded-xl hover:scale-105 transition-transform duration-300"
-                src={img}
-                alt={`about-img-${i}`}
-              />
-            )
-          )}
+        {/* Video Section */}
+        <div className="w-full lg:w-1/2 aspect-video rounded-xl overflow-hidden shadow-lg">
+          <iframe
+            className="w-full h-full"
+            src="https://www.youtube.com/embed/4i9mrA8kvHo?si=VaGA5MaoM-Ceodmc"
+            title="TPI CPC - About Us"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+          ></iframe>
         </div>
 
         {/* About Content */}

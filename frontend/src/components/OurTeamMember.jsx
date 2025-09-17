@@ -39,7 +39,7 @@ const OurTeamMember = () => {
   }, []);
 
   return (
-    <section className="mt-15">
+    <section className="mt-15 px-10">
       <SectionTitle
         title={"Meet Our Team Members 👥✨"}
         paragraph={`Meet our talented team 🤝. Each member brings passion, creativity 🎨, and dedication 🚀. Together, we learn, collaborate, and create amazing things 🌟!`}

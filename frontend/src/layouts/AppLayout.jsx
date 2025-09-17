@@ -1,4 +1,3 @@
-import { FireworksBackground } from "@/components/animate-ui/backgrounds/fireworks";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 
@@ -13,8 +12,7 @@ const AppLayout = ({ children }) => {
         />
         <div className="relative">
           <Navbar />
-          <div className="relative z-40 px-4 md:px-7 lg:px-16">{children}</div>
-          <FireworksBackground className="h-screen fixed inset-0 rounded-xl" />
+          <div className="relative z-40 container mx-auto px-4 md:px-10">{children}</div>
           <Footer />
         </div>
       </div>
