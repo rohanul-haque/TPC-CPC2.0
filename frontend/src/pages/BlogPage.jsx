@@ -87,7 +87,8 @@ const BlogPage = () => {
                 </div>
               </div>
             ))
-          : currentBlogs.map((blog) => {
+          : currentBlogs.length > 0
+          ? currentBlogs.map((blog) => {
               const { _id, image, title, description } = blog;
 
               return (
@@ -119,7 +120,12 @@ const BlogPage = () => {
                   </div>
                 </div>
               );
-            })}
+            })
+          : // No blogs message
+            <p className="col-span-full text-center text-gray-500 dark:text-gray-400 mt-10 text-lg">
+              No blogs available at the moment. Please check back later! 📝
+            </p>
+        }
       </div>
 
       {/* Pagination */}

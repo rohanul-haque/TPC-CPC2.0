@@ -4,6 +4,7 @@ import { UserContext } from "@/contexts/UserContext";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronDown,
+  DiamondPlus,
   LoaderCircle,
   LogOut,
   Menu,
@@ -141,17 +142,25 @@ const Navbar = () => {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-md py-2 z-50 border border-gray-200 dark:border-gray-700"
+                    className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-md z-50 border border-gray-200 dark:border-gray-700 overflow-hidden"
                   >
                     <Link
                       to="/profile"
-                      className="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      className="block px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={() => setProfileDropdown(false)}
                     >
                       <User size={16} className="inline mr-2" /> Profile
                     </Link>
+                    <Link
+                      to="/add-review"
+                      className="block px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      onClick={() => setProfileDropdown(false)}
+                    >
+                      <DiamondPlus size={16} className="inline mr-2" /> Add
+                      Review
+                    </Link>
                     <button
-                      className="w-full text-left px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      className="w-full text-left px-4 py-2.5 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={handleLogout}
                     >
                       <LogOut size={16} className="inline mr-2" /> Logout

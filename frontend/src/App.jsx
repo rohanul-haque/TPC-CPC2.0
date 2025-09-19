@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import AppLayout from "./layouts/AppLayout";
 import AboutPage from "./pages/AboutPage";
+import AddReviewPage from "./pages/AddReviewPage";
 import BlogPage from "./pages/BlogPage";
 import ContactPage from "./pages/ContactPage";
 import ErrorPage from "./pages/ErrorPage";
@@ -31,21 +32,22 @@ const App = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) {
-      const path = window.location.pathname;
-      if (path === "/login" || path === "/signup") {
-        navigate("/");
-      }
+    const path = window.location.pathname;
+
+    // Redirect logged-in users away from login/signup
+    if (token && (path === "/login" || path === "/signup")) {
+      navigate("/", { replace: true });
+    }
+
+    // Redirect non-logged-in users away from protected pages
+    if (!token && (path === "/profile" || path === "/add-review")) {
+      navigate("/login", { replace: true });
     }
   }, [navigate]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100);
-    };
-
+    const handleScroll = () => setIsScrolled(window.scrollY > 100);
     window.addEventListener("scroll", handleScroll);
-
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -66,7 +68,6 @@ const App = () => {
         </button>
       )}
 
-      {/* Routes */}
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
@@ -81,12 +82,20 @@ const App = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
-        {/* Protected Route for Profile */}
+        {/* Protected Routes */}
         <Route
           path="/profile"
           element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/add-review"
+          element={
+            <ProtectedRoute>
+              <AddReviewPage />
             </ProtectedRoute>
           }
         />
