@@ -9,7 +9,7 @@ import { NavLink } from "react-router-dom";
 
 const FooterPage = () => {
   return (
-    <footer className="bg-gray-900 px-4 sm:px-8 lg:px-16 mt-20 pt-16 pb-10 rounded-tl-xl rounded-tr-xl text-white dark:border-t dark:border-gray-700 relative">
+    <footer className="bg-gray-900 container mx-auto px-4 md:px-10 mt-20 pt-16 pb-10 rounded-tl-xl rounded-tr-xl text-white dark:border-t dark:border-gray-700 relative">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
         {/* Quick Links */}
         <div>
