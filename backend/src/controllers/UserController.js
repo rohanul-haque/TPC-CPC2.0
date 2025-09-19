@@ -155,8 +155,17 @@ export const updateUser = async (req, res) => {
     }
 
     if (profileImage) {
-      const uploadResult = await cloudinary.uploader.upload(profileImage.path);
+      const uploadResult = await cloudinary.uploader.upload(profileImage.path, {
+        folder: "profiles",
+      });
       updateData.profileImage = uploadResult.secure_url;
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No update fields provided",
+      });
     }
 
     const updatedUser = await User.findByIdAndUpdate(
@@ -173,11 +182,15 @@ export const updateUser = async (req, res) => {
 
     return res.json({
       success: true,
-      message: "Update successfully",
+      message: "Profile updated successfully",
       user: updatedUser,
     });
   } catch (error) {
-    return res.status(500).json({ success: false, message: "Update failed" });
+    return res.status(500).json({
+      success: false,
+      message: "Update failed",
+      error: error.message,
+    });
   }
 };
 
@@ -203,7 +216,7 @@ export const sendVerificationOtpEmail = async (req, res) => {
     user.otp = otp;
     await user.save();
 
-    const mailOptions = {
+    await transporter.sendMail({
       from: "tpicpc@gmail.com",
       to: email,
       subject: "🔐 Password Reset OTP - TPI CPC",
@@ -238,12 +251,11 @@ export const sendVerificationOtpEmail = async (req, res) => {
     </div>
   </div>
 `,
-    };
-
-    await transporter.sendMail(mailOptions);
+    });
 
     return res.json({ success: true, message: "OTP sent successfully" });
   } catch (error) {
+    console.log(error);
     return res
       .status(500)
       .json({ success: false, message: "OTP sending failed" });
@@ -288,38 +300,3 @@ export const changePassword = async (req, res) => {
       .json({ success: false, message: "Password change failed" });
   }
 };
-
-//   const { otp, email } = req.body;
-
-//   console.log(otp, email);
-
-//   if (!otp || !email) {
-//     return res
-//       .status(400)
-//       .json({ success: false, message: "All fields are required" });
-//   }
-
-//   try {
-//     const admin = await Admin.findOne({ email });
-
-//     if (!admin) {
-//       return res
-//         .status(404)
-//         .json({ success: false, message: "Admin not found" });
-//     }
-
-//     if (String(admin.otp) === String(otp)) {
-//       return res.json({
-//         success: true,
-//         message: "OTP verified successfully",
-//       });
-//     } else {
-//       return res.json({ success: false, message: "Invalid OTP" });
-//     }
-//   } catch (error) {
-//     console.error("OTP Verification Error:", error);
-//     return res
-//       .status(500)
-//       .json({ success: false, message: "OTP verification failed" });
-//   }
-// };
