@@ -66,7 +66,7 @@ const OurTeamMember = () => {
                   </div>
                 </CarouselItem>
               ))
-            : teamMemberData?.map((team) => (
+            : teamMemberData?.reverse().map((team) => (
                 <CarouselItem
                   key={team._id}
                   className="pl-6 md:basis-1/2 lg:basis-1/3"

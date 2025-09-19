@@ -67,7 +67,7 @@ const OurAdvisors = () => {
                   </div>
                 </CarouselItem>
               ))
-            : advisorData?.map((advisor) => (
+            : advisorData?.reverse().map((advisor) => (
                 <CarouselItem
                   key={advisor._id}
                   className="pl-6 md:basis-1/2 lg:basis-1/3"
