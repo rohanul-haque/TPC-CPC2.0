@@ -20,8 +20,8 @@ app.use(
     origin: ["https://tpicpc.com", "http://localhost:5173"],
   })
 );
-app.use(express.json());
 
+app.use(express.json());
 app.use("/admin", AdminRouter);
 app.use("/user", UserRoute);
 app.use("/advisor", AdvisorRoute);
