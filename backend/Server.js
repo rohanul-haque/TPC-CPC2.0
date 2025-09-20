@@ -5,16 +5,21 @@ import express from "express";
 import ConnectDB from "./src/db/ConnectDB.js";
 import AdminRouter from "./src/routes/AdminRouter.js";
 import AdvisorRoute from "./src/routes/AdvisorRoute.js";
+import BlogRoute from "./src/routes/BlogRoute.js";
 import EventRoute from "./src/routes/EventRoute.js";
+import ReviewRoute from "./src/routes/ReviewRoute.js";
 import TeamRoute from "./src/routes/TeamRoute.js";
 import UserRoute from "./src/routes/UserRoute.js";
-import BlogRoute from "./src/routes/BlogRoute.js";
-import ReviewRoute from "./src/routes/ReviewRoute.js";
 import ConnectCloudinary from "./src/utils/Cloudinary.js";
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    credentials: true,
+    origin: ["https://tpicpc.com", "http://localhost:5173"],
+  })
+);
 app.use(express.json());
 
 app.use("/admin", AdminRouter);

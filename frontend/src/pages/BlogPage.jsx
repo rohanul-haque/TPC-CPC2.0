@@ -72,60 +72,61 @@ const BlogPage = () => {
 
       {/* Blog Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {loading
-          ? Array.from({ length: blogsPerPage }).map((_, i) => (
+        {loading ? (
+          Array.from({ length: blogsPerPage }).map((_, i) => (
+            <div
+              key={i}
+              className="p-6 rounded-lg border border-gray-400/50 dark:border-gray-700 backdrop-blur-md"
+            >
+              <Skeleton className="w-full h-48 rounded-md bg-gray-400/70 dark:bg-gray-600" />
+              <div className="mt-5 space-y-3">
+                <Skeleton className="h-6 w-3/4 bg-gray-400/70 dark:bg-gray-600" />
+                <Skeleton className="h-4 w-full bg-gray-400/70 dark:bg-gray-600" />
+                <Skeleton className="h-4 w-2/3 bg-gray-400/70 dark:bg-gray-600" />
+                <Skeleton className="h-10 w-32 bg-gray-400/70 dark:bg-gray-600" />
+              </div>
+            </div>
+          ))
+        ) : currentBlogs.length > 0 ? (
+          currentBlogs.reverse().map((blog) => {
+            const { _id, image, title, description } = blog;
+
+            return (
               <div
-                key={i}
+                key={_id}
                 className="p-6 rounded-lg border border-gray-400/50 dark:border-gray-700 backdrop-blur-md"
               >
-                <Skeleton className="w-full h-48 rounded-md bg-gray-400/70 dark:bg-gray-600" />
+                <img
+                  src={image || "/placeholder-project.png"}
+                  alt={title}
+                  className="w-full h-48 object-cover rounded-md"
+                />
                 <div className="mt-5 space-y-3">
-                  <Skeleton className="h-6 w-3/4 bg-gray-400/70 dark:bg-gray-600" />
-                  <Skeleton className="h-4 w-full bg-gray-400/70 dark:bg-gray-600" />
-                  <Skeleton className="h-4 w-2/3 bg-gray-400/70 dark:bg-gray-600" />
-                  <Skeleton className="h-10 w-32 bg-gray-400/70 dark:bg-gray-600" />
+                  <h3 className="text-2xl font-bold mb-4">
+                    {truncateText(title, 23)}
+                  </h3>
+                  <p className="text-gray-700 dark:text-gray-300">
+                    {truncateText(description, 100)}
+                  </p>
+                  <Button
+                    onClick={() => {
+                      navigate(`/blog/${_id}`);
+                      window.scrollTo(0, 0);
+                    }}
+                    className="bg-blue-500 text-white hover:bg-blue-600 transition-colors cursor-pointer"
+                  >
+                    Read More
+                  </Button>
                 </div>
               </div>
-            ))
-          : currentBlogs.length > 0
-          ? currentBlogs.map((blog) => {
-              const { _id, image, title, description } = blog;
-
-              return (
-                <div
-                  key={_id}
-                  className="p-6 rounded-lg border border-gray-400/50 dark:border-gray-700 backdrop-blur-md"
-                >
-                  <img
-                    src={image || "/placeholder-project.png"}
-                    alt={title}
-                    className="w-full h-48 object-cover rounded-md"
-                  />
-                  <div className="mt-5 space-y-3">
-                    <h3 className="text-2xl font-bold mb-4">
-                      {truncateText(title, 23)}
-                    </h3>
-                    <p className="text-gray-700 dark:text-gray-300">
-                      {truncateText(description, 100)}
-                    </p>
-                    <Button
-                      onClick={() => {
-                        navigate(`/blog/${_id}`);
-                        window.scrollTo(0, 0);
-                      }}
-                      className="bg-blue-500 text-white hover:bg-blue-600 transition-colors cursor-pointer"
-                    >
-                      Read More
-                    </Button>
-                  </div>
-                </div>
-              );
-            })
-          : // No blogs message
-            <p className="col-span-full text-center text-gray-500 dark:text-gray-400 mt-10 text-lg">
-              No blogs available at the moment. Please check back later! 📝
-            </p>
-        }
+            );
+          })
+        ) : (
+          // No blogs message
+          <p className="col-span-full text-center text-gray-500 dark:text-gray-400 mt-10 text-lg">
+            No blogs available at the moment. Please check back later! 📝
+          </p>
+        )}
       </div>
 
       {/* Pagination */}

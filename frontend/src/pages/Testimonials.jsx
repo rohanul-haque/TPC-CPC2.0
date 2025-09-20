@@ -34,6 +34,8 @@ function Testimonials() {
     fetchReviewList();
   }, []);
 
+  console.log(reviewList);
+
   const formatDate = (dateStr) => {
     if (!dateStr) return "";
     const date = new Date(dateStr);
@@ -66,7 +68,7 @@ function Testimonials() {
                 <Skeleton className="h-4 w-1/3 mt-4 bg-gray-400/70 dark:bg-gray-600" />
               </div>
             ))
-          : reviewList?.slice(0, visibleCount).map((review) => (
+          : reviewList?.slice(0, visibleCount).reverse().map((review) => (
               <div
                 key={review._id}
                 className="border-gray-400/50 dark:border-gray-700 p-6 rounded-xl shadow-md break-inside-avoid border backdrop-blur-md"
@@ -86,7 +88,7 @@ function Testimonials() {
                     </p>
                     <div className="flex items-center justify-between">
                       <p className="capitalize">
-                        {(review.dippertment || "Cst").slice(0, 8)}....
+                        {(review.department || "Cst").slice(0, 8)}....
                       </p>
                       <span>{formatDate(review.createdAt)}</span>
                     </div>

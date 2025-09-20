@@ -102,9 +102,9 @@ const EventPage = () => {
             </p>
           </div>
         ) : (
-          currentEvents.map((event) => (
+          currentEvents.reverse().map((event) => (
             <div
-              key={event._id} // ✅ fixed
+              key={event._id}
               className="flex items-center flex-col md:flex-row border border-gray-400/50 dark:border-gray-500/50 backdrop-blur-sm rounded-lg overflow-hidden relative"
             >
               {/* Status badge */}
@@ -120,7 +120,7 @@ const EventPage = () => {
               {/* Event Image */}
               <div className="w-full md:w-[40%] h-full">
                 <img
-                  className="w-full h-full object-cover"
+                  className="w-full h-[300px] object-cover"
                   src={event.eventImage}
                   alt={event.title}
                 />
