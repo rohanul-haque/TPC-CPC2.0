@@ -1,21 +1,23 @@
 import express from "express";
 import {
-  addTeamMember,
-  deleteTeamMember,
-  teamMemberList,
-} from "../controllers/TeamController.js";
+  addExTeamMember,
+  deleteExTeamMember,
+  exTeamMemberList,
+} from "../controllers/ExTeamController.js";
 import AuthMiddleware from "../middlewares/AuthMiddleware.js";
 import ImageUploader from "../utils/ImageUploader.js";
 
 const router = express.Router();
 
 router.post(
-  "/add",
+  "/ex-add",
   AuthMiddleware,
   ImageUploader.single("memberProfile"),
-  addTeamMember
+  addExTeamMember
 );
-router.get("/list", teamMemberList);
-router.delete("/:id", AuthMiddleware, deleteTeamMember);
+
+router.get("/list", exTeamMemberList);
+
+router.delete("/:id", AuthMiddleware, deleteExTeamMember);
 
 export default router;

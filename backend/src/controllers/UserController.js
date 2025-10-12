@@ -5,7 +5,7 @@ import User from "../models/User.js";
 import generateToken from "../utils/GenerateToken.js";
 import transporter from "../utils/NodeMailer.js";
 
-export const registerUser = async (req, res) => {
+export const signupUser = async (req, res) => {
   const {
     fullName,
     email,
@@ -15,6 +15,7 @@ export const registerUser = async (req, res) => {
     shift,
     password,
   } = req.body;
+
   const profileImage = req.file;
 
   if (
@@ -33,24 +34,21 @@ export const registerUser = async (req, res) => {
   }
 
   try {
-    // check by email OR rollNumber
     const existingUser = await User.findOne({
       $or: [{ email }, { rollNumber }],
     });
 
     if (existingUser) {
-      return res
-        .status(400)
-        .json({ success: false, message: "User already exists" });
+      return res.status(400).json({
+        success: false,
+        message: "Email or Roll number already used",
+      });
     }
 
-    // hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // upload image
     const uploadResult = await cloudinary.uploader.upload(profileImage.path);
 
-    // create new user
     const newUser = new User({
       fullName,
       email,
@@ -66,13 +64,15 @@ export const registerUser = async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      message: "Registration successful",
+      message: "Registration successful!",
       token: generateToken(newUser._id),
     });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ success: false, message: "Registration failed" });
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Registration failed. Please try again.",
+    });
   }
 };
 
@@ -120,9 +120,9 @@ export const userData = async (req, res) => {
 
     if (!user) return res.json({ success: false, message: "User not found" });
 
-    return res.json({ success: true, userData: user });
+    return res.json({ success: true, user });
   } catch (error) {
-    return res.json({ success: false, message: "User not found" });
+    return res.json({ success: false, message: "User data not found" });
   }
 };
 
@@ -155,17 +155,9 @@ export const updateUser = async (req, res) => {
     }
 
     if (profileImage) {
-      const uploadResult = await cloudinary.uploader.upload(profileImage.path, {
-        folder: "profiles",
-      });
-      updateData.profileImage = uploadResult.secure_url;
-    }
+      const uploadResult = await cloudinary.uploader.upload(profileImage.path);
 
-    if (Object.keys(updateData).length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "No update fields provided",
-      });
+      updateData.profileImage = uploadResult.secure_url;
     }
 
     const updatedUser = await User.findByIdAndUpdate(
@@ -189,7 +181,6 @@ export const updateUser = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Update failed",
-      error: error.message,
     });
   }
 };
@@ -211,7 +202,7 @@ export const sendVerificationOtpEmail = async (req, res) => {
         .json({ success: false, message: "User not found" });
     }
 
-    const otp = Math.floor(1000 + Math.random() * 9000);
+    const otp = Math.floor(10000 + Math.random() * 90000);
 
     user.otp = otp;
     await user.save();
@@ -262,17 +253,48 @@ export const sendVerificationOtpEmail = async (req, res) => {
   }
 };
 
-export const changePassword = async (req, res) => {
-  try {
-    const { email, otp, newPassword } = req.body;
+export const verifyResetOtp = async (req, res) => {
+  const { email, otp } = req.body;
 
-    if (!email || !otp || !newPassword) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required",
-      });
+  if (!email || !otp) {
+    return res
+      .status(400)
+      .json({ success: false, message: "All fields are required" });
+  }
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
+    if (user.otp !== Number(otp))
+      return res.json({ success: false, message: "Invalid OTP" });
+
+    return res
+      .status(200)
+      .json({ success: true, message: "OTP verified successfully" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "OTP verification failed" });
+  }
+};
+
+export const changePassword = async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+
+  if (!email || !otp || !newPassword) {
+    return res.status(400).json({
+      success: false,
+      message: "All fields are required",
+    });
+  }
+
+  try {
     const user = await User.findOne({ email });
     if (!user) {
       return res

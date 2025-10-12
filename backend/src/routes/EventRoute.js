@@ -1,9 +1,9 @@
 import express from "express";
 import {
-    AddEvent,
-    DeleteEvent,
-    EventList,
-    UpdateEvent,
+  AddEvent,
+  DeleteEvent,
+  EventList,
+  UpdateEvent,
 } from "../controllers/EventController.js";
 import AuthMiddleware from "../middlewares/AuthMiddleware.js";
 import ImageUploader from "../utils/ImageUploader.js";
@@ -23,6 +23,6 @@ router.put(
   ImageUploader.single("eventImage"),
   UpdateEvent
 );
-router.delete("/delete", AuthMiddleware, DeleteEvent);
+router.delete("/:id", AuthMiddleware, DeleteEvent);
 
 export default router;

@@ -1,19 +1,19 @@
 import express from "express";
 import {
   changePassword,
-  checkValidOtp,
   getAdminProfile,
   loginAdmin,
-  registerAdmin,
   sendVerificationOtpEmail,
+  signupAdmin,
   updateAdmin,
+  verifyAdminOtp,
 } from "../controllers/AdminController.js";
 import AuthMiddleware from "../middlewares/AuthMiddleware.js";
 import ImageUploader from "../utils/ImageUploader.js";
 
 const router = express.Router();
 
-router.post("/register", ImageUploader.single("adminProfile"), registerAdmin);
+router.post("/signup", ImageUploader.single("adminProfile"), signupAdmin);
 router.post("/login", loginAdmin);
 router.get("/data", AuthMiddleware, getAdminProfile);
 router.put(
@@ -22,7 +22,7 @@ router.put(
   ImageUploader.single("adminProfile"),
   updateAdmin
 );
-router.post("/send-otp", sendVerificationOtpEmail);
-router.post("/change-password", changePassword);
-router.post("/check-otp", checkValidOtp);
+router.post("/send-reset-otp", sendVerificationOtpEmail);
+router.post("/verify-reset-otp", verifyAdminOtp);
+router.put("/change-password", changePassword);
 export default router;

@@ -5,7 +5,7 @@ import Admin from "../models/Admin.js";
 import generateToken from "../utils/GenerateToken.js";
 import transporter from "../utils/NodeMailer.js";
 
-export const registerAdmin = async (req, res) => {
+export const signupAdmin = async (req, res) => {
   const { name, email, password } = req.body;
   const adminProfile = req.file;
 
@@ -59,15 +59,15 @@ export const loginAdmin = async (req, res) => {
   }
 
   try {
-    const existingAdmin = await Admin.findOne({ email });
+    const user = await Admin.findOne({ email });
 
-    if (!existingAdmin) {
+    if (!user) {
       return res
         .status(404)
         .json({ success: false, message: "Admin not found" });
     }
 
-    const isMatch = await bcrypt.compare(password, existingAdmin.password);
+    const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
       return res
@@ -78,7 +78,7 @@ export const loginAdmin = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Login successful",
-      token: generateToken(existingAdmin._id),
+      token: generateToken(user._id),
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: "Login failed" });
@@ -97,11 +97,11 @@ export const getAdminProfile = async (req, res) => {
         .json({ success: false, message: "Admin not found" });
     }
 
-    return res.json({ success: true, adminData: admin });
+    return res.json({ success: true, admin });
   } catch (error) {
     return res
       .status(500)
-      .json({ success: false, message: "Failed to fetch profile" });
+      .json({ success: false, message: "Admin profile not found" });
   }
 };
 
@@ -163,7 +163,7 @@ export const sendVerificationOtpEmail = async (req, res) => {
         .json({ success: false, message: "Admin not found" });
     }
 
-    const otp = String(Math.floor(1000 + Math.random() * 9000));
+    const otp = String(Math.floor(10000 + Math.random() * 90000));
 
     admin.otp = otp;
     await admin.save();
@@ -171,7 +171,7 @@ export const sendVerificationOtpEmail = async (req, res) => {
     const mailOptions = {
       from: "tpicpc@gmail.com",
       to: email,
-      subject: "🔐 Password Reset OTP - Admin Panel",
+      subject: "🔐 Password Reset OTP - TPI CPC Admin Panel",
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px; background: #f3f4f6; color: #333;">
           <div style="max-width: 500px; margin: auto; background: #ffffff; border-radius: 12px; padding: 30px; box-shadow: 0 6px 18px rgba(0,0,0,0.1);">
@@ -197,7 +197,7 @@ export const sendVerificationOtpEmail = async (req, res) => {
 
             <p style="text-align: center; font-size: 14px; color: #9ca3af;">
               Best regards, <br/>
-              <strong style="color:#1f2937;">Admin Panel Support Team</strong>
+              <strong style="color:#1f2937;">TPI CPC Admin Panel Support Team</strong>
             </p>
           </div>
         </div>
@@ -208,14 +208,14 @@ export const sendVerificationOtpEmail = async (req, res) => {
 
     return res.json({ success: true, message: "OTP sent successfully" });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return res
       .status(500)
       .json({ success: false, message: "OTP sending failed" });
   }
 };
 
-export const checkValidOtp = async (req, res) => {
+export const verifyAdminOtp = async (req, res) => {
   const { otp, email } = req.body;
 
   if (!otp || !email) {
@@ -241,7 +241,7 @@ export const checkValidOtp = async (req, res) => {
       });
     }
 
-    return res.status(200).json({ success: true, message: "OTP is valid" });
+    res.json({ success: true, message: "OTP verified successfully" });
   } catch (error) {
     return res
       .status(500)
@@ -250,16 +250,16 @@ export const checkValidOtp = async (req, res) => {
 };
 
 export const changePassword = async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+
+  if (!email || !otp || !newPassword) {
+    return res.status(400).json({
+      success: false,
+      message: "All fields are required",
+    });
+  }
+
   try {
-    const { email, otp, newPassword } = req.body;
-
-    if (!email || !otp || !newPassword) {
-      return res.status(400).json({
-        success: false,
-        message: "All fields are required",
-      });
-    }
-
     const admin = await Admin.findOne({ email });
     if (!admin) {
       return res
@@ -268,7 +268,9 @@ export const changePassword = async (req, res) => {
     }
 
     if (admin.otp !== Number(otp)) {
-      return res.status(400).json({ success: false, message: "Invalid OTP" });
+      return res
+        .status(400)
+        .json({ success: false, message: "OTP verified failed" });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);

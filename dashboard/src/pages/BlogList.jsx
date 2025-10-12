@@ -20,7 +20,7 @@ const BlogList = () => {
     try {
       const { data } = await axios.get(`${backendUrl}/blog/list`);
       if (data.success) {
-        setBlogList(data.blogList);
+        setBlogList(data.blogs || []);
       }
     } catch (error) {
       toast.error(

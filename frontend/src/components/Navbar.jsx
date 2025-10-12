@@ -59,6 +59,32 @@ const Navbar = () => {
 
   return (
     <header className="w-full sticky top-0 z-50">
+      <div className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-2 overflow-hidden relative">
+        <motion.div
+          className="flex whitespace-nowrap text-sm md:text-base tracking-wide"
+          animate={{ x: ["0%", "-100%"] }}
+          transition={{
+            repeat: Infinity,
+            duration: 20,
+            ease: "linear",
+          }}
+        >
+          <span className="mr-10">
+            🚀{" "}
+            <span className="font-medium">
+              🚀 Python Workshop — Coming Soon! Learn Python A→Z with hands-on
+              AI modules. Real Python assignments ✅, official certificate ✅.
+              Seats limited — register now! ✨
+            </span>{" "}
+            <span className="font-medium">
+              🚀 Python Workshop — Coming Soon! Learn Python A→Z with hands-on
+              AI modules. Real Python assignments ✅, official certificate ✅.
+              Seats limited — register now! ✨
+            </span>{" "}
+          </span>
+        </motion.div>
+      </div>
+
       <motion.nav
         initial={{ y: -60 }}
         animate={{ y: 0 }}

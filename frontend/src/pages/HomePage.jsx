@@ -9,6 +9,7 @@ import ContactPage from "./ContactPage";
 import EventPage from "./EventPage";
 import Faqs from "./Faqs";
 import Testimonials from "./Testimonials";
+import OurExTeamMember from "@/components/OurExTeamMember";
 
 const HomePage = () => {
   return (
@@ -19,6 +20,7 @@ const HomePage = () => {
       <WhyJoin />
       <div className="mt-16"></div>
       <OurAdvisors />
+      <OurExTeamMember />
       <OurTeamMember />
       <div className="mt-16"></div>
       <EventPage />

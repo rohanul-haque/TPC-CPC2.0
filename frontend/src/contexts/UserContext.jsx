@@ -1,5 +1,5 @@
-import { createContext, useState, useEffect } from "react";
 import axios from "axios";
+import { createContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 export const UserContext = createContext();
@@ -22,8 +22,10 @@ export const UserContextProvider = ({ children }) => {
         headers: { token },
       });
 
+      console.log(data);
+
       if (data.success) {
-        setUserData(data.userData);
+        setUserData(data.user);
       } else {
         toast.error("Failed to fetch user data");
       }

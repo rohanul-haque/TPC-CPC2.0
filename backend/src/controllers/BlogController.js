@@ -1,7 +1,8 @@
 import { v2 as cloudinary } from "cloudinary";
 import Blog from "../models/Blog.js";
+import mongoose from "mongoose";
 
-export const createBlog = async (req, res) => {
+export const postBlog = async (req, res) => {
   const { title, description } = req.body;
   const imageFile = req.file;
 
@@ -44,36 +45,28 @@ export const blogList = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "No blogs found",
-        blogList: [],
       });
     }
 
     return res.status(200).json({
       success: true,
-      message: "Blog list fetched successfully",
-      blogList: blogs,
+      blogs,
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: "Blog list fetch failed",
-      blogList: [],
+      message: "Blog list not found",
     });
   }
 };
 
 export const blogFindById = async (req, res) => {
-  const { blogId } = req.body;
+  const { id } = req.params;
 
-  if (!blogId) {
-    return res.status(400).json({
-      success: false,
-      message: "Blog id is required",
-    });
-  }
+  if (!id) return res.json({ success: false, message: "Blog id is required" });
 
   try {
-    const blog = await Blog.findById(blogId);
+    const blog = await Blog.findById(id);
 
     if (!blog) {
       return res.status(404).json({
@@ -84,21 +77,20 @@ export const blogFindById = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Blog found successfully",
-      blogData: blog,
+      blog,
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: "Failed to fetch blog",
+      message: "Blog not found",
     });
   }
 };
 
 export const blogDelete = async (req, res) => {
-  const { blogId } = req.body;
+  const { id } = req.params;
 
-  if (!blogId) {
+  if (!id) {
     return res.status(400).json({
       success: false,
       message: "Blog id is required",
@@ -106,7 +98,7 @@ export const blogDelete = async (req, res) => {
   }
 
   try {
-    const deletedBlog = await Blog.findByIdAndDelete(blogId);
+    const deletedBlog = await Blog.findByIdAndDelete(id);
 
     if (!deletedBlog) {
       return res.status(404).json({

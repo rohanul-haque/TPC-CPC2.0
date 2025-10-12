@@ -4,13 +4,13 @@ import { AppContext } from "@/contexts/AppContext";
 import axios from "axios";
 import { MoveLeft } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import { Link, useParams } from "react-router-dom";
 import "../styles/ViewBlog.css";
 
 const ViewBlogPage = () => {
   const [blogData, setBlogData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const { id } = useParams();
   const { backendUrl } = useContext(AppContext);
@@ -18,15 +18,13 @@ const ViewBlogPage = () => {
   const findBlogById = async () => {
     setLoading(true);
     try {
-      const { data } = await axios.post(`${backendUrl}/blog/find`, {
-        blogId: id,
-      });
+      const { data } = await axios.get(`${backendUrl}/blog/${id}`);
 
       if (data.success) {
-        setBlogData(data.blogData);
+        setBlogData(data.blog);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || error.message);
+      setError(error.response?.data?.message || error.message);
     } finally {
       setLoading(false);
     }
@@ -36,7 +34,6 @@ const ViewBlogPage = () => {
     findBlogById();
   }, [id]);
 
-  // Format Date
   const formattedDate = blogData
     ? new Date(blogData?.createdAt).toLocaleDateString("en-US", {
         year: "numeric",

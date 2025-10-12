@@ -1,24 +1,22 @@
 import { v2 as cloudinary } from "cloudinary";
 import Advisor from "../models/Adviser.js";
 
-export const createAdvisor = async (req, res) => {
-  const { name, role } = req.body;
+export const addAdvisor = async (req, res) => {
+  const { name, position } = req.body;
   const advisorProfile = req.file;
 
-  if (!name || !role || !advisorProfile) {
+  if (!name || !position || !advisorProfile) {
     return res
       .status(400)
       .json({ success: false, message: "All fields are required" });
   }
 
   try {
-    const uploadResult = await cloudinary.uploader.upload(advisorProfile.path, {
-      folder: "advisors",
-    });
+    const uploadResult = await cloudinary.uploader.upload(advisorProfile.path);
 
     const newAdvisor = new Advisor({
       name,
-      role,
+      position,
       advisorProfile: uploadResult.secure_url,
     });
 
@@ -27,7 +25,6 @@ export const createAdvisor = async (req, res) => {
     res.status(201).json({
       success: true,
       message: "Advisor added successfully",
-      data: newAdvisor,
     });
   } catch (error) {
     res.status(500).json({
@@ -37,26 +34,24 @@ export const createAdvisor = async (req, res) => {
   }
 };
 
-// Get All Advisors
-export const getAllAdvisor = async (req, res) => {
+export const advisorList = async (req, res) => {
   try {
     const advisors = await Advisor.find();
 
     res.status(200).json({
       success: true,
-      message: "Advisor data fetched successfully",
-      advisorList: advisors,
+      advisors,
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Advisor data fetch failed",
+      message: "Advisor data not found",
     });
   }
 };
 
 export const deleteAdvisor = async (req, res) => {
-  const { id } = req.body;
+  const { id } = req.params;
 
   if (!id) {
     return res.status(400).json({ success: false, message: "ID is required" });

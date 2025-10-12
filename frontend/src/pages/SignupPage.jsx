@@ -70,7 +70,7 @@ const SignupPage = () => {
       if (profileImage) formData.append("profileImage", profileImage);
 
       const { data } = await axios.post(
-        `${backendUrl}/user/register`,
+        `${backendUrl}/user/signup`,
         formData
       );
 

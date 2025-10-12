@@ -1,10 +1,10 @@
 import { Error } from "@/components/Error";
 import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AppContext } from "@/contexts/AppContext";
@@ -13,8 +13,8 @@ import Autoplay from "embla-carousel-autoplay";
 import { useContext, useEffect, useState } from "react";
 import SectionTitle from "./SectionTitle";
 
-const OurTeamMember = () => {
-  const [teamMemberData, setTeamMemberData] = useState([]);
+const OurExTeamMember = () => {
+  const [teamExMemberData, setTeamExMemberData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -23,17 +23,17 @@ const OurTeamMember = () => {
   const fetchTeamMemberData = async () => {
     setLoading(true);
     try {
-      const { data } = await axios.get(`${backendUrl}/team/list`);
+      const { data } = await axios.get(`${backendUrl}/ex-team/list`);
 
-      if (data.success && data.teams?.length > 0) {
-        setTeamMemberData(data.teams.reverse());
+      if (data.success && data.members?.length > 0) {
+        setTeamExMemberData(data.members.reverse());
         setError("");
       } else {
-        setTeamMemberData([]);
+        setTeamExMemberData([]);
         setError("🚫 No team members found yet! 🌟 Stay tuned for updates 🎉");
       }
     } catch (err) {
-      setTeamMemberData([]);
+      setTeamExMemberData([]);
       setError("🚫 Failed to fetch team members. Please try again later 🌟");
     } finally {
       setLoading(false);
@@ -48,8 +48,8 @@ const OurTeamMember = () => {
     return (
       <section className="mt-15 px-10">
         <SectionTitle
-          title={`Meet Our Team Members ${new Date().getFullYear()} 👥✨`}
-          paragraph="Meet our talented team 🤝. Each member brings passion, creativity 🎨, and dedication 🚀. Together, we learn, collaborate, and create amazing things 🌟!"
+          title={`Meet Our Ex Team Members 👥✨`}
+          paragraph="Our former team members 💼 have contributed their skills, passion 🎨, and dedication 🚀 to help build our journey. Their hard work, creativity, and collaboration 🌟 continue to inspire us even after they’ve moved on. 🙌"
         />
         <Carousel
           className="w-full mt-10"
@@ -71,17 +71,17 @@ const OurTeamMember = () => {
     );
   }
 
-  if (!teamMemberData.length || error) {
+  if (!teamExMemberData.length || error) {
     return (
       <section className="mt-15 px-10">
         <SectionTitle
-          title={`Meet Our Team Members ${new Date().getFullYear()} 👥✨`}
-          paragraph="Meet our talented team 🤝. Each member brings passion, creativity 🎨, and dedication 🚀. Together, we learn, collaborate, and create amazing things 🌟!"
+          title={`Meet Our Ex Team Members 👥✨`}
+          paragraph="Our former team members 💼 have contributed their skills, passion 🎨, and dedication 🚀 to help build our journey. Their hard work, creativity, and collaboration 🌟 continue to inspire us even after they’ve moved on. 🙌"
         />
         <div className="w-full flex justify-center items-center py-10">
           <Error
-            title={"🚫 No team members found yet!"}
-            description="🌟 Stay tuned, new member will join soon 🎉"
+            title={"🚫 No ex-team members found yet!"}
+            description="🌟 Stay tuned, new ex-member will join soon 🎉"
           />
         </div>
       </section>
@@ -91,12 +91,12 @@ const OurTeamMember = () => {
   return (
     <section className="mt-15 px-10">
       <SectionTitle
-        title={`Meet Our Team Members ${new Date().getFullYear()} 👥✨`}
-        paragraph="Meet our talented team 🤝. Each member brings passion, creativity 🎨, and dedication 🚀. Together, we learn, collaborate, and create amazing things 🌟!"
+        title={`Meet Our Ex Team Members 👥✨`}
+        paragraph="Our former team members 💼 have contributed their skills, passion 🎨, and dedication 🚀 to help build our journey. Their hard work, creativity, and collaboration 🌟 continue to inspire us even after they’ve moved on. 🙌"
       />
       <Carousel className="w-full mt-10" plugins={[Autoplay({ delay: 2000 })]}>
         <CarouselContent>
-          {teamMemberData.map((team) => (
+          {teamExMemberData.map((team) => (
             <CarouselItem
               key={team._id}
               className="pl-6 md:basis-1/2 lg:basis-1/3"
@@ -122,4 +122,4 @@ const OurTeamMember = () => {
   );
 };
 
-export default OurTeamMember;
+export default OurExTeamMember;

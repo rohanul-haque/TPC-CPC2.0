@@ -2,61 +2,57 @@ import { v2 as cloudinary } from "cloudinary";
 
 import Team from "../models/Team.js";
 
-export const createTeam = async (req, res) => {
-  const { name, role } = req.body;
+export const addTeamMember = async (req, res) => {
+  const { name, position } = req.body;
   const memberProfile = req.file;
 
-  if (!name || !role || !memberProfile) {
+  if (!name || !position || !memberProfile) {
     return res
       .status(400)
       .json({ success: false, message: "All fields are required" });
   }
 
   try {
-    // Upload image to Cloudinary
     const uploadResult = await cloudinary.uploader.upload(memberProfile.path);
 
-    // Save new team member
-    const newTeam = new Team({
+    const newTeamMember = new Team({
       name,
-      role,
+      position,
       memberProfile: uploadResult.secure_url,
     });
 
-    await newTeam.save();
+    await newTeamMember.save();
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
-      message: "Team member added successfully",
-      data: newTeam,
+      message: "Team member added successfully!",
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
-      message: "Team member added failed",
+      message: "Failed to add team member. Please try again later.",
     });
   }
 };
 
-export const getAllTeams = async (req, res) => {
+export const teamMemberList = async (req, res) => {
   try {
     const teams = await Team.find();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      message: "Team data fetched successfully",
-      teamList: teams,
+      teams,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
-      message: "Team data fetch failed",
+      message: "Team list not found",
     });
   }
 };
 
 export const deleteTeamMember = async (req, res) => {
-  const { id } = req.body;
+  const { id } = req.params;
 
   if (!id) {
     return res.status(400).json({ success: false, message: "ID is required" });

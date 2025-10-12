@@ -18,7 +18,7 @@ const AdvisorListPage = () => {
     setIsLoading(true);
     try {
       const { data } = await axios.get(`${backendUrl}/advisor/list`);
-      if (data.success) setAdvisorList(data.advisorList || []);
+      if (data.success) setAdvisorList(data.advisors || []);
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
@@ -35,10 +35,12 @@ const AdvisorListPage = () => {
       return;
 
     try {
-      const { data } = await axios.delete(`${backendUrl}/advisor/delete`, {
-        headers: { token: localStorage.getItem("token") },
-        data: { id: advisorId },
-      });
+      const { data } = await axios.delete(
+        `${backendUrl}/advisor/${advisorId}`,
+        {
+          headers: { token: localStorage.getItem("token") },
+        }
+      );
 
       if (data.success) {
         toast.success(data.message || "Advisor deleted successfully");
@@ -124,7 +126,7 @@ const AdvisorListPage = () => {
                     </td>
                     <td className="px-6 py-4">
                       <span className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
-                        {advisor.role}
+                        {advisor.position}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-center">
@@ -164,7 +166,7 @@ const AdvisorListPage = () => {
                     <p className="text-sm font-medium text-gray-900">
                       {advisor.name}
                     </p>
-                    <p className="text-xs text-gray-600">{advisor.role}</p>
+                    <p className="text-xs text-gray-600">{advisor.position}</p>
                   </div>
                 </div>
                 <Button

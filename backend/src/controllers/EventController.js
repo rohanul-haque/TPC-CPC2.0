@@ -52,7 +52,6 @@ export const AddEvent = async (req, res) => {
       message: "Event added successfully",
     });
   } catch (error) {
-    console.error(error);
     return res
       .status(500)
       .json({ success: false, message: "Event add failed" });
@@ -65,20 +64,18 @@ export const EventList = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "Event data fetched successfully",
-      eventList: events,
+      events,
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({
       success: false,
-      message: "Event data fetch failed",
+      message: "Event data not found",
     });
   }
 };
 
 export const DeleteEvent = async (req, res) => {
-  const { id } = req.body;
+  const { id } = req.params;
 
   if (!id) {
     return res.status(400).json({ success: false, message: "ID is required" });

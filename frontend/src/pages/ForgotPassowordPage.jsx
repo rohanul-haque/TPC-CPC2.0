@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useContext, useEffect, useRef, useState } from "react";
-import axios from "axios";
 import { AppContext } from "@/contexts/AppContext";
+import axios from "axios";
+import { ArrowLeft, Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
+import { useContext, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Mail, Lock, Loader2, ArrowLeft } from "lucide-react";
 
 const ForgotPasswordPage = () => {
   const [step, setStep] = useState(
@@ -16,7 +16,7 @@ const ForgotPasswordPage = () => {
   );
   const [code, setCode] = useState(() => {
     const savedCode = localStorage.getItem("resetOTP");
-    return savedCode ? savedCode.split("") : new Array(4).fill("");
+    return savedCode ? savedCode.split("") : new Array(5).fill("");
   });
 
   const inputRefs = useRef([]);
@@ -51,24 +51,23 @@ const ForgotPasswordPage = () => {
 
   const handlePaste = (e) => {
     e.preventDefault();
-    const pasteData = e.clipboardData.getData("text").slice(0, 4);
+    const pasteData = e.clipboardData.getData("text").slice(0, 5);
     if (!/^\d+$/.test(pasteData)) return;
-    const newCode = new Array(4).fill("");
+    const newCode = new Array(5).fill("");
     for (let i = 0; i < pasteData.length; i++) newCode[i] = pasteData[i];
     setCode(newCode);
-    inputRefs.current[Math.min(pasteData.length, 3)]?.focus();
+    inputRefs.current[Math.min(pasteData.length, 4)]?.focus();
   };
 
   useEffect(() => {
     if (step === 2) inputRefs.current[0]?.focus();
   }, [step]);
 
-  // API Calls
   const sendCode = async () => {
     if (!email) return toast.error("Please enter your email");
     setLoading(true);
     try {
-      const { data } = await axios.post(`${backendUrl}/user/reset-otp`, {
+      const { data } = await axios.post(`${backendUrl}/user/send-reset-otp`, {
         email,
       });
       if (data.success) {
@@ -83,10 +82,20 @@ const ForgotPasswordPage = () => {
     }
   };
 
-  const verifyCode = () => {
-    if (code.join("").length !== 4)
-      return toast.error("Please enter the 4-digit code");
-    setStep(3);
+  const verifyCode = async () => {
+    try {
+      const { data } = await axios.post(`${backendUrl}/user/verify-reset-otp`, {
+        email,
+        otp: Number(code.join("")),
+      });
+
+      if (data.success) {
+        toast.success(data.message);
+        setStep(3);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to verify code");
+    }
   };
 
   const resetPassword = async (e) => {
@@ -111,7 +120,7 @@ const ForgotPasswordPage = () => {
 
         setStep(1);
         setEmail("");
-        setCode(new Array(4).fill(""));
+        setCode(new Array(5).fill(""));
         setNewPassword("");
         setConfirmPassword("");
         navigate("/");
@@ -134,7 +143,6 @@ const ForgotPasswordPage = () => {
         onSubmit={resetPassword}
         className="w-full max-w-md mx-auto space-y-6 p-6 rounded-xl border border-gray-400/60 dark:border-gray-600 backdrop-blur-md"
       >
-        {/* Top-left Back Link */}
         {step > 1 && (
           <div
             className="flex items-center cursor-pointer text-blue-600 dark:text-blue-500 hover:underline mb-4"
@@ -144,7 +152,7 @@ const ForgotPasswordPage = () => {
           </div>
         )}
 
-        {/* Step 1: Email */}
+        {/* Step 1 */}
         {step === 1 && (
           <div className="space-y-4">
             <h1 className="text-2xl font-semibold text-center">
@@ -180,14 +188,14 @@ const ForgotPasswordPage = () => {
           </div>
         )}
 
-        {/* Step 2: OTP Verification */}
+        {/* Step 2 */}
         {step === 2 && (
           <div className="space-y-4">
             <h1 className="text-2xl font-semibold text-center">
               📩 Verify Code
             </h1>
             <p className="text-sm text-muted-foreground text-center">
-              Enter the 4-digit code sent to your email
+              Enter the 5-digit code sent to your email
             </p>
             <div className="flex items-center justify-center font-sans p-4">
               <div className="relative z-10">
@@ -222,7 +230,6 @@ const ForgotPasswordPage = () => {
                 </p>
               </div>
             </div>
-
             <Button
               className="w-full flex items-center justify-center gap-1"
               type="button"
@@ -235,7 +242,7 @@ const ForgotPasswordPage = () => {
           </div>
         )}
 
-        {/* Step 3: New Password */}
+        {/* Step 3 */}
         {step === 3 && (
           <div className="space-y-4">
             <h1 className="text-2xl font-semibold text-center">
@@ -244,7 +251,6 @@ const ForgotPasswordPage = () => {
             <p className="text-sm text-muted-foreground text-center">
               Choose a strong password for your account
             </p>
-
             <div className="relative">
               <Lock
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500"
@@ -257,6 +263,7 @@ const ForgotPasswordPage = () => {
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="Enter new password"
                 className="pl-10 border-gray-400/60 dark:border-gray-600"
+                required
               />
               <button
                 type="button"
@@ -266,7 +273,6 @@ const ForgotPasswordPage = () => {
                 {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-
             <div className="relative">
               <Lock
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500"
@@ -279,6 +285,7 @@ const ForgotPasswordPage = () => {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Re-enter new password"
                 className="pl-10 border-gray-400/60 dark:border-gray-600"
+                required
               />
               <button
                 type="button"
@@ -288,7 +295,6 @@ const ForgotPasswordPage = () => {
                 {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-
             <Button
               className="w-full flex items-center justify-center gap-1"
               type="submit"
