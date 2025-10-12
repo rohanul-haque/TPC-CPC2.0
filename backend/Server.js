@@ -35,6 +35,7 @@ app.use(
       "www.tpicpc.com",
       "http://localhost:5173",
       "http://localhost:5174",
+      "https://tpi-cpc-official.vercel.app",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
   })
