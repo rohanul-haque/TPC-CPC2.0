@@ -26,9 +26,6 @@ export const navLink = [
   { id: 3, name: "Teams", path: "/teams" },
   { id: 4, name: "Events", path: "/events" },
   { id: 5, name: "Blogs", path: "/blogs" },
-  { id: 6, name: "Testimonials", path: "/testimonials" },
-  { id: 7, name: "Faqs", path: "/faqs" },
-  { id: 8, name: "Contact", path: "/contact" },
 ];
 
 export const counterNumber = [

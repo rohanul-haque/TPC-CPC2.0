@@ -22,7 +22,7 @@ const AddOurAdvisorPage = () => {
     try {
       const formData = new FormData();
       formData.append("name", name);
-      formData.append("role", role); // role instead of position
+      formData.append("position", role);
       if (memberProfile) formData.append("advisorProfile", memberProfile);
 
       const { data } = await axios.post(`${backendUrl}/advisor/add`, formData, {
@@ -92,7 +92,11 @@ const AddOurAdvisorPage = () => {
         </div>
 
         {/* Submit Button */}
-        <Button type="submit" disabled={loading} className="flex items-center gap-1">
+        <Button
+          type="submit"
+          disabled={loading}
+          className="flex items-center gap-1"
+        >
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />

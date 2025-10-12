@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { AppContext } from "@/contexts/AppContext";
 import axios from "axios";
-import { PencilRuler, RefreshCw, X } from "lucide-react";
+import { PencilRuler, X } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -37,7 +37,7 @@ const EventList = () => {
     setLoading(true);
     try {
       const { data } = await axios.get(`${backendUrl}/event/list`);
-      if (data.success) setEventList(data.eventList);
+      if (data.success) setEventList(data.events || []);
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
@@ -57,8 +57,7 @@ const EventList = () => {
     if (!window.confirm("Are you sure you want to delete this event?")) return;
     setDeletingId(eventId);
     try {
-      const { data } = await axios.delete(`${backendUrl}/event/delete`, {
-        data: { id: eventId },
+      const { data } = await axios.delete(`${backendUrl}/event/${eventId}`, {
         headers: { token: localStorage.getItem("token") },
       });
       if (data.success) {

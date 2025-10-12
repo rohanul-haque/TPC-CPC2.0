@@ -5,7 +5,7 @@ const advisorSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  role: {
+  position: {
     type: String,
     required: true,
   },

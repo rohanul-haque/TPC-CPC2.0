@@ -23,7 +23,7 @@ const AddTeamMember = () => {
       // FormData for file upload
       const formData = new FormData();
       formData.append("name", name);
-      formData.append("role", position);
+      formData.append("position", position);
       if (memberProfile) {
         formData.append("memberProfile", memberProfile);
       }

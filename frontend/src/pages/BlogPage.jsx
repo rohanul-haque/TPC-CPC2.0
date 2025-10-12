@@ -1,3 +1,4 @@
+import { Error } from "@/components/Error";
 import SectionTitle from "@/components/SectionTitle";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,33 +12,37 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { AppContext } from "@/contexts/AppContext";
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useMemo } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 const BlogPage = () => {
   const [blogList, setBlogList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const blogsPerPage = 6;
 
   const { backendUrl } = useContext(AppContext);
 
+  // ✅ Safe truncate for HTML to plain text
   const truncateText = (html, length) => {
     const div = document.createElement("div");
-    div.innerHTML = html;
+    div.innerHTML = html || "";
     const text = div.textContent || div.innerText || "";
     return text.length > length ? text.substring(0, length) + "..." : text;
   };
 
-  // pagination logic
-  const indexOfLastBlog = currentPage * blogsPerPage;
-  const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
-  const currentBlogs = blogList.slice(indexOfFirstBlog, indexOfLastBlog);
+  // ✅ Avoid mutating original array with .reverse()
+  const currentBlogs = useMemo(() => {
+    const startIndex = (currentPage - 1) * blogsPerPage;
+    const endIndex = startIndex + blogsPerPage;
+    return [...blogList].reverse().slice(startIndex, endIndex);
+  }, [blogList, currentPage]);
+
   const totalPages = Math.ceil(blogList.length / blogsPerPage);
 
-  // Scroll to top (blog section)
   const scrollToTop = () => {
     const section = document.getElementById("blog-list");
     if (section) {
@@ -48,12 +53,17 @@ const BlogPage = () => {
   const fetchBlogData = async () => {
     try {
       setLoading(true);
+      setError("");
       const { data } = await axios.get(`${backendUrl}/blog/list`);
+
       if (data.success) {
-        setBlogList(data?.blogList || []);
+        setBlogList(data.blogs || []);
+      } else {
+        toast.error("Failed to load blogs ❌");
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || error.message);
+      const msg = error.response?.data?.message || "Failed to fetch blogs";
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -67,12 +77,13 @@ const BlogPage = () => {
     <section className="mt-6" id="blog-list">
       <SectionTitle
         title="Our Blogs 📝🌐"
-        paragraph={`💡 Explore insightful articles, coding tips, and tech updates! 🚀 Stay updated and level up your skills with TPI CPC blogs! 📚✨`}
+        paragraph="💡 Explore insightful articles, coding tips, and tech updates! 🚀 Stay updated and level up your skills with TPI CPC blogs! 📚✨"
       />
 
       {/* Blog Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {loading ? (
+          // ✅ Loading Skeletons
           Array.from({ length: blogsPerPage }).map((_, i) => (
             <div
               key={i}
@@ -87,45 +98,53 @@ const BlogPage = () => {
               </div>
             </div>
           ))
+        ) : error ? (
+          // ✅ Centered Error Section
+          <div className="flex justify-center items-center w-full my-10 col-span-full">
+            <Error
+              title="🚫 No Blogs Found Yet!"
+              description="✨ Stay tuned — exciting new posts are on the way! 🎉"
+            />
+          </div>
         ) : currentBlogs.length > 0 ? (
-          currentBlogs.reverse().map((blog) => {
-            const { _id, image, title, description } = blog;
-
-            return (
-              <div
-                key={_id}
-                className="p-6 rounded-lg border border-gray-400/50 dark:border-gray-700 backdrop-blur-md"
-              >
-                <img
-                  src={image || "/placeholder-project.png"}
-                  alt={title}
-                  className="w-full h-48 object-cover rounded-md"
-                />
-                <div className="mt-5 space-y-3">
-                  <h3 className="text-2xl font-bold mb-4">
-                    {truncateText(title, 23)}
-                  </h3>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    {truncateText(description, 100)}
-                  </p>
-                  <Button
-                    onClick={() => {
-                      navigate(`/blog/${_id}`);
-                      window.scrollTo(0, 0);
-                    }}
-                    className="bg-blue-500 text-white hover:bg-blue-600 transition-colors cursor-pointer"
-                  >
-                    Read More
-                  </Button>
-                </div>
+          currentBlogs.map(({ _id, image, title, description }) => (
+            <div
+              key={_id}
+              className="p-6 rounded-lg border border-gray-400/50 dark:border-gray-700 backdrop-blur-md hover:shadow-lg transition-all duration-200"
+            >
+              <img
+                src={image || "/placeholder-project.png"}
+                alt={title}
+                className="w-full h-48 object-cover rounded-md"
+              />
+              <div className="mt-5 space-y-3">
+                <h3 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">
+                  {truncateText(title, 40)}
+                </h3>
+                <p className="text-gray-700 dark:text-gray-300">
+                  {truncateText(description, 100)}
+                </p>
+                <Button
+                  onClick={() => {
+                    navigate(`/blog/${_id}`);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className="bg-blue-500 text-white hover:bg-blue-600 transition-colors cursor-pointer"
+                >
+                  Read More →
+                </Button>
               </div>
-            );
-          })
+            </div>
+          ))
         ) : (
-          // No blogs message
-          <p className="col-span-full text-center text-gray-500 dark:text-gray-400 mt-10 text-lg">
-            No blogs available at the moment. Please check back later! 📝
-          </p>
+          <div className="col-span-full text-center my-10">
+            <p className="text-2xl font-semibold text-gray-600 dark:text-gray-300">
+              🚫 No Blogs Found Yet!
+            </p>
+            <p className="text-gray-500 mt-2 text-lg">
+              ✨ Stay tuned — exciting new posts are on the way! 🎉
+            </p>
+          </div>
         )}
       </div>
 
@@ -134,12 +153,11 @@ const BlogPage = () => {
         <div className="flex justify-center mt-8">
           <Pagination>
             <PaginationContent>
-              {/* Previous */}
               <PaginationItem>
                 <PaginationPrevious
                   onClick={() => {
                     if (currentPage > 1) {
-                      setCurrentPage(currentPage - 1);
+                      setCurrentPage((prev) => prev - 1);
                       scrollToTop();
                     }
                   }}
@@ -149,7 +167,6 @@ const BlogPage = () => {
                 />
               </PaginationItem>
 
-              {/* Page numbers */}
               {Array.from({ length: totalPages }, (_, i) => (
                 <PaginationItem key={i + 1}>
                   <PaginationLink
@@ -164,12 +181,11 @@ const BlogPage = () => {
                 </PaginationItem>
               ))}
 
-              {/* Next */}
               <PaginationItem>
                 <PaginationNext
                   onClick={() => {
                     if (currentPage < totalPages) {
-                      setCurrentPage(currentPage + 1);
+                      setCurrentPage((prev) => prev + 1);
                       scrollToTop();
                     }
                   }}

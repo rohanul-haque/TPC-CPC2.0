@@ -21,7 +21,7 @@ export const UserContextProvider = ({ children }) => {
       });
 
       if (data.success) {
-        setAdminData(data.adminData);
+        setAdminData(data.admin);
       }
     } catch (error) {
       toast.error(error.response?.data?.message || error.message);

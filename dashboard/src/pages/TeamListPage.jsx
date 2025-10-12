@@ -18,7 +18,7 @@ const TeamList = () => {
     setIsLoading(true);
     try {
       const { data } = await axios.get(`${backendUrl}/team/list`);
-      if (data.success) setMemberList(data.teamList || []);
+      if (data.success) setMemberList(data.teams || []);
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
@@ -34,7 +34,7 @@ const TeamList = () => {
     if (!window.confirm("Are you sure you want to delete this member?")) return;
 
     try {
-      const { data } = await axios.delete(`${backendUrl}/team/delete`, {
+      const { data } = await axios.delete(`${backendUrl}/team/${memberId}`, {
         headers: { token: localStorage.getItem("token") },
         data: { id: memberId },
       });
@@ -121,7 +121,7 @@ const TeamList = () => {
                     </td>
                     <td className="px-6 py-4">
                       <span className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
-                        {member.role}
+                        {member.position}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-center">

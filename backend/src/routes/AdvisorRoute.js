@@ -1,8 +1,8 @@
 import express from "express";
 import {
-  createAdvisor,
-  deleteAdvisor,
-  getAllAdvisor,
+  addAdvisor,
+  advisorList,
+  deleteAdvisor
 } from "../controllers/AdvisorController.js";
 import AuthMiddleware from "../middlewares/AuthMiddleware.js";
 import ImageUploader from "../utils/ImageUploader.js";
@@ -13,9 +13,9 @@ router.post(
   "/add",
   AuthMiddleware,
   ImageUploader.single("advisorProfile"),
-  createAdvisor
+  addAdvisor
 );
-router.get("/list", getAllAdvisor);
-router.delete("/delete", AuthMiddleware, deleteAdvisor);
+router.get("/list", advisorList);
+router.delete("/:id", AuthMiddleware, deleteAdvisor);
 
 export default router;

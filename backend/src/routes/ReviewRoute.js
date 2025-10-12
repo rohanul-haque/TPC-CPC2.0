@@ -7,8 +7,8 @@ const router = express.Router();
 
 router.post(
   "/add",
-  ImageUploader.single("profileImage"),
   AuthMiddleware,
+  ImageUploader.single("profileImage"),
   AddReview
 );
 

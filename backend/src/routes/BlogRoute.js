@@ -1,18 +1,17 @@
 import express from "express";
 import {
+  postBlog,
   blogDelete,
-  blogFindById,
   blogList,
-  createBlog,
+  blogFindById,
 } from "../controllers/BlogController.js";
 import AuthMiddleware from "../middlewares/AuthMiddleware.js";
 import ImageUploader from "../utils/ImageUploader.js";
-
 const router = express.Router();
 
-router.post("/post", AuthMiddleware, ImageUploader.single("image"), createBlog);
+router.post("/post", AuthMiddleware, ImageUploader.single("image"), postBlog);
 router.get("/list", blogList);
-router.post("/find", blogFindById);
-router.delete("/delete", AuthMiddleware, blogDelete);
+router.get("/:id", blogFindById);
+router.delete("/:id", AuthMiddleware, blogDelete);
 
 export default router;

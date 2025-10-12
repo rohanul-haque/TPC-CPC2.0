@@ -1,3 +1,4 @@
+import { Error } from "@/components/Error";
 import SectionTitle from "@/components/SectionTitle";
 import {
   Pagination,
@@ -7,21 +8,21 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Skeleton } from "@/components/ui/skeleton"; // ✅ ShadCN skeleton
+import { Skeleton } from "@/components/ui/skeleton";
 import { AppContext } from "@/contexts/AppContext";
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
-import toast from "react-hot-toast";
 
 const EventPage = () => {
   const [eventList, setEventList] = useState([]);
-  const [loading, setLoading] = useState(true); // ✅ loading state
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const eventsPerPage = 6;
 
-  const totalPages = Math.ceil(eventList.length / eventsPerPage);
-
   const { backendUrl } = useContext(AppContext);
+
+  const totalPages = Math.ceil(eventList?.length / eventsPerPage);
 
   const scrollToTop = () => {
     const section = document.getElementById("event-list");
@@ -30,7 +31,7 @@ const EventPage = () => {
 
   const indexOfLastEvent = currentPage * eventsPerPage;
   const indexOfFirstEvent = indexOfLastEvent - eventsPerPage;
-  const currentEvents = eventList.slice(indexOfFirstEvent, indexOfLastEvent);
+  const currentEvents = eventList?.slice(indexOfFirstEvent, indexOfLastEvent);
 
   const formatDateTime = (isoString) => {
     const options = {
@@ -47,12 +48,14 @@ const EventPage = () => {
   const fetchEventDataList = async () => {
     try {
       setLoading(true);
+      setError("");
       const { data } = await axios.get(`${backendUrl}/event/list`);
+
       if (data.success) {
-        setEventList(data.eventList);
+        setEventList(data.events || []);
       }
-    } catch (error) {
-      toast.error("Failed to fetch events");
+    } catch (err) {
+      setError("🚫 No events found Yet");
     } finally {
       setLoading(false);
     }
@@ -69,9 +72,15 @@ const EventPage = () => {
         paragraph={`🚀 Dive into exciting coding contests, workshops, and webinars! 💻 Join TPI CPC events to learn, innovate, and level up your tech skills! 🌟`}
       />
 
+      {error && (
+        <Error
+          title={"🚫 No events found Yet!"}
+          description={" Stay tuned! New events will be announced soon 🎉!"}
+        />
+      )}
+
       <div className="w-full grid grid-cols-1 gap-6 mt-10">
         {loading ? (
-          // ✅ Skeleton Loader (while fetching)
           Array.from({ length: 3 }).map((_, i) => (
             <div
               key={i}
@@ -86,78 +95,68 @@ const EventPage = () => {
               </div>
             </div>
           ))
-        ) : eventList.length === 0 ? (
-          <div className="text-center py-20">
-            <img
-              src="/no-data.png"
-              alt="No events"
-              className="mx-auto w-40 h-40 opacity-70"
-              onError={(e) => (e.currentTarget.style.display = "none")}
-            />
-            <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mt-4">
-              No events found 🚫
-            </h2>
-            <p className="text-gray-500 dark:text-gray-400 mt-2">
-              Stay tuned! New events will be announced soon 🎉
-            </p>
-          </div>
+        ) : eventList.length === 0 && !error ? (
+          <Error
+            title={"🚫 No events found Yet!"}
+            description={" Stay tuned! New events will be announced soon 🎉!"}
+          />
         ) : (
-          currentEvents.reverse().map((event) => (
-            <div
-              key={event._id}
-              className="flex items-center flex-col md:flex-row border border-gray-400/50 dark:border-gray-500/50 backdrop-blur-sm rounded-lg overflow-hidden relative"
-            >
-              {/* Status badge */}
+          currentEvents
+            .slice()
+            .reverse()
+            .map((event) => (
               <div
-                className="absolute right-0 top-0 bg-violet-500 py-1 px-2"
-                style={{ borderBottomLeftRadius: "10px" }}
+                key={event._id}
+                className="flex items-center flex-col md:flex-row border border-gray-400/50 dark:border-gray-500/50 backdrop-blur-sm rounded-lg overflow-hidden relative"
               >
-                <span className="text-sm font-medium text-white">
-                  {event.status}
-                </span>
-              </div>
-
-              {/* Event Image */}
-              <div className="w-full md:w-[40%] h-full">
-                <img
-                  className="w-full h-[300px] object-cover"
-                  src={event.eventImage}
-                  alt={event.title}
-                />
-              </div>
-
-              {/* Event Info */}
-              <div className="w-full md:w-[60%] p-6 h-full">
-                <h2 className="text-2xl font-semibold mb-3">{event.title}</h2>
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="font-semibold">Time:</span>
-                  <span>
-                    {formatDateTime(event.startTime)} –{" "}
-                    {formatDateTime(event.endTime)}
+                <div
+                  className="absolute right-0 top-0 bg-violet-500 py-1 px-2"
+                  style={{ borderBottomLeftRadius: "10px" }}
+                >
+                  <span className="text-sm font-medium text-white">
+                    {event.status}
                   </span>
                 </div>
-                <p className="mb-2">{event.description}</p>
-                <p className="mb-2">
-                  <span className="font-semibold">Event Type:</span>{" "}
-                  <span>{event.eventType}</span>
-                </p>
-                <p className="mb-2">
-                  <span className="font-semibold">Organizer:</span>{" "}
-                  <span>{event.organizer}</span>
-                </p>
-                {event.collaboration && (
+
+                <div className="w-full md:w-[40%] h-full">
+                  <img
+                    className="w-full h-[300px] object-cover"
+                    src={event.eventImage}
+                    alt={event.title}
+                    onError={(e) => (e.currentTarget.style.display = "none")}
+                  />
+                </div>
+
+                <div className="w-full md:w-[60%] p-6 h-full">
+                  <h2 className="text-2xl font-semibold mb-3">{event.title}</h2>
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="font-semibold">Time:</span>
+                    <span>
+                      {formatDateTime(event.startTime)} –{" "}
+                      {formatDateTime(event.endTime)}
+                    </span>
+                  </div>
+                  <p className="mb-2">{event.description}</p>
                   <p className="mb-2">
-                    <span className="font-semibold">Collaboration:</span>{" "}
-                    <span>{event.collaboration}</span>
+                    <span className="font-semibold">Event Type:</span>{" "}
+                    <span>{event.eventType}</span>
                   </p>
-                )}
+                  <p className="mb-2">
+                    <span className="font-semibold">Organizer:</span>{" "}
+                    <span>{event.organizer}</span>
+                  </p>
+                  {event.collaboration && (
+                    <p className="mb-2">
+                      <span className="font-semibold">Collaboration:</span>{" "}
+                      <span>{event.collaboration}</span>
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
-          ))
+            ))
         )}
       </div>
 
-      {/* Pagination */}
       {!loading && eventList.length > 0 && totalPages > 1 && (
         <div className="flex justify-center mt-8">
           <Pagination>

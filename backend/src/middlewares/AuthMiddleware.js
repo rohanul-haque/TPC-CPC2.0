@@ -13,7 +13,6 @@ const AuthMiddleware = async (req, res, next) => {
     req.id = decoded.id;
     next();
   } catch (error) {
-    console.error("Auth error:", error.message);
     return res
       .status(401)
       .json({ success: false, message: "Unauthorized. Please try again." });

@@ -1,5 +1,4 @@
-import { ChevronUp } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import AppLayout from "./layouts/AppLayout";
 import AboutPage from "./pages/AboutPage";
@@ -27,47 +26,22 @@ const ProtectedRoute = ({ children }) => {
 };
 
 const App = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
-
   useEffect(() => {
     const token = localStorage.getItem("token");
     const path = window.location.pathname;
 
-    // Redirect logged-in users away from login/signup
     if (token && (path === "/login" || path === "/signup")) {
       navigate("/", { replace: true });
     }
 
-    // Redirect non-logged-in users away from protected pages
     if (!token && (path === "/profile" || path === "/add-review")) {
       navigate("/login", { replace: true });
     }
   }, [navigate]);
 
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 100);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
   return (
     <AppLayout>
-      {/* Scroll to Top Button */}
-      {isScrolled && (
-        <button
-          onClick={scrollToTop}
-          className="fixed bottom-5 right-5 z-50 w-10 h-10 bg-indigo-500 shadow-lg rounded-md flex items-center justify-center hover:bg-indigo-600"
-          aria-label="Scroll to top"
-        >
-          <ChevronUp className="text-white" />
-        </button>
-      )}
-
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
@@ -82,7 +56,6 @@ const App = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
-        {/* Protected Routes */}
         <Route
           path="/profile"
           element={

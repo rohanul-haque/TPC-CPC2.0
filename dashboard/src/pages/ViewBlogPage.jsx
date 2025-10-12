@@ -18,12 +18,10 @@ const ViewBlog = () => {
   const findBlogById = async () => {
     setLoader(true);
     try {
-      const { data } = await axios.post(`${backendUrl}/blog/find`, {
-        blogId: id,
-      });
+      const { data } = await axios.get(`${backendUrl}/blog/${id}`);
 
       if (data.success) {
-        setBlogData(data.blogData);
+        setBlogData(data.blog);
       }
     } catch (error) {
       toast.error(error.response?.data?.message || error.message);
