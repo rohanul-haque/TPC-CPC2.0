@@ -3,7 +3,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { RotatingText } from "./animate-ui/text/rotating";
+import { FlipWords } from "./FlipWords ";
 import { Button } from "./ui/button";
 
 const Hero = () => {
@@ -17,24 +17,25 @@ const Hero = () => {
         {/* Heading */}
         <h1 className="mt-4 text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight">
           Here at TPI CPC, you will Learn
-          <span className="font-extrabold text-indigo-600 dark:text-indigo-400">
-            <RotatingText
-              text={[
-                "Skill Development 💪",
-                "Problem Solving 🧩",
-                "Networking Opportunities 🌐",
-                "Career Growth 📈",
-                "Competitions 🏆",
-                "Teamwork 🤝",
-                "Leadership 👑",
-                "Communication 🗣️",
-                "Innovation 💡",
-                "Critical Thinking 🧠",
-                "Coding 💻",
-              ]}
-            />
-          </span>
         </h1>
+
+        <div className="mt-5">
+          <FlipWords
+            words={[
+              "Skill Development",
+              "Problem Solving",
+              "Networking",
+              "Career Growth",
+              "Competitions",
+              "Teamwork",
+              "Leadership",
+              "Communication",
+              "Innovation",
+              "Critical Thinking",
+              "Coding",
+            ]}
+          />
+        </div>
 
         {/* Description */}
         <p className="mt-6 max-w-3xl text-[17px] leading-relaxed">

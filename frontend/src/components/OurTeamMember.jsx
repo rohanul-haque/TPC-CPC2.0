@@ -7,50 +7,18 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AppContext } from "@/contexts/AppContext";
-import axios from "axios";
 import Autoplay from "embla-carousel-autoplay";
-import { useContext, useEffect, useState } from "react";
 import SectionTitle from "./SectionTitle";
 
-const OurTeamMember = () => {
-  const [teamMemberData, setTeamMemberData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+const OurTeamMember = ({ teamMemberData = [], loading, error }) => {
+  return (
+    <section className="mt-6 lg:px-10">
+      <SectionTitle
+        title={`Meet Our Team Members ${new Date().getFullYear()} 👥✨`}
+        paragraph="Meet our talented team 🤝. Each member brings passion, creativity 🎨, and dedication 🚀. Together, we learn, collaborate, and create amazing things 🌟!"
+      />
 
-  const { backendUrl } = useContext(AppContext);
-
-  const fetchTeamMemberData = async () => {
-    setLoading(true);
-    try {
-      const { data } = await axios.get(`${backendUrl}/team/list`);
-
-      if (data.success && data.teams?.length > 0) {
-        setTeamMemberData(data.teams.reverse());
-        setError("");
-      } else {
-        setTeamMemberData([]);
-        setError("🚫 No team members found yet! 🌟 Stay tuned for updates 🎉");
-      }
-    } catch (err) {
-      setTeamMemberData([]);
-      setError("🚫 Failed to fetch team members. Please try again later 🌟");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchTeamMemberData();
-  }, []);
-
-  if (loading) {
-    return (
-      <section className="mt-15 px-10">
-        <SectionTitle
-          title={`Meet Our Team Members ${new Date().getFullYear()} 👥✨`}
-          paragraph="Meet our talented team 🤝. Each member brings passion, creativity 🎨, and dedication 🚀. Together, we learn, collaborate, and create amazing things 🌟!"
-        />
+      {loading && (
         <Carousel
           className="w-full mt-10"
           plugins={[Autoplay({ delay: 2000 })]}
@@ -67,57 +35,62 @@ const OurTeamMember = () => {
             ))}
           </CarouselContent>
         </Carousel>
-      </section>
-    );
-  }
+      )}
 
-  if (!teamMemberData.length || error) {
-    return (
-      <section className="mt-15 px-10">
-        <SectionTitle
-          title={`Meet Our Team Members ${new Date().getFullYear()} 👥✨`}
-          paragraph="Meet our talented team 🤝. Each member brings passion, creativity 🎨, and dedication 🚀. Together, we learn, collaborate, and create amazing things 🌟!"
-        />
+      {!loading && (error || teamMemberData.length === 0) && (
         <div className="w-full flex justify-center items-center py-10">
           <Error
-            title={"🚫 No team members found yet!"}
-            description="🌟 Stay tuned, new member will join soon 🎉"
+            title={
+              error
+                ? "🚫 No team members found yet!"
+                : "🚫 No team members found yet!"
+            }
+            description={
+              error
+                ? "🌟 Stay tuned, new member will join soon 🎉"
+                : "🌟 Stay tuned, new member will join soon 🎉"
+            }
           />
         </div>
-      </section>
-    );
-  }
+      )}
 
-  return (
-    <section className="mt-15 px-10">
-      <SectionTitle
-        title={`Meet Our Team Members ${new Date().getFullYear()} 👥✨`}
-        paragraph="Meet our talented team 🤝. Each member brings passion, creativity 🎨, and dedication 🚀. Together, we learn, collaborate, and create amazing things 🌟!"
-      />
-      <Carousel className="w-full mt-10" plugins={[Autoplay({ delay: 2000 })]}>
-        <CarouselContent>
-          {teamMemberData.map((team) => (
-            <CarouselItem
-              key={team._id}
-              className="pl-6 md:basis-1/2 lg:basis-1/3"
-            >
-              <div className="flex flex-col items-center p-6 rounded-2xl text-center border border-gray-400/50 dark:border-gray-500/50 backdrop-blur-sm">
-                <img
-                  className="w-28 h-28 object-cover rounded-full border-4 border-blue-500 shadow-md mb-4"
-                  src={team?.memberProfile}
-                  alt={team?.name}
-                />
-                <h1 className="text-lg font-semibold uppercase">
-                  {team?.name}
-                </h1>
-                <span>{team?.position}</span>
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious className="hidden lg:flex" />
-        <CarouselNext className="hidden lg:flex" />
-      </Carousel>
+      {!loading && !error && teamMemberData.length > 0 && (
+        <Carousel
+          className="w-full mt-10"
+          plugins={[Autoplay({ delay: 2500 })]}
+        >
+          <CarouselContent>
+            {teamMemberData
+              .slice()
+              .reverse()
+              .map((member) => {
+                return (
+                  <CarouselItem
+                    key={member?._id}
+                    className="pl-6 md:basis-1/2 lg:basis-1/3"
+                  >
+                    <div className="flex flex-col items-center p-6 rounded-2xl text-center border border-gray-400/50 dark:border-gray-500/50 backdrop-blur-sm">
+                      <img
+                        className="w-28 h-28 object-cover rounded-full border-4 border-blue-500 shadow-md mb-4"
+                        src={member?.memberProfile}
+                        alt={member?.name}
+                        loading="lazy"
+                      />
+                      <h1 className="text-lg font-semibold uppercase">
+                        {member?.name}
+                      </h1>
+                      <span className="text-sm opacity-80">
+                        {member?.position}
+                      </span>
+                    </div>
+                  </CarouselItem>
+                );
+              })}
+          </CarouselContent>
+          <CarouselPrevious className="hidden lg:flex" />
+          <CarouselNext className="hidden lg:flex" />
+        </Carousel>
+      )}
     </section>
   );
 };

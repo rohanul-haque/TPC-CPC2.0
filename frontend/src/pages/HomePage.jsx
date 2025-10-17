@@ -3,15 +3,26 @@ import Hero from "@/components/Hero";
 import OurAdvisors from "@/components/OurAdvisors";
 import OurTeamMember from "@/components/OurTeamMember";
 import WhyJoin from "@/components/WhyJoin";
+import { HomePageDataContext } from "@/contexts/HomePageDataContext";
+import { useContext } from "react";
 import AboutPage from "./AboutPage";
 import BlogPage from "./BlogPage";
 import ContactPage from "./ContactPage";
 import EventPage from "./EventPage";
 import Faqs from "./Faqs";
 import Testimonials from "./Testimonials";
-import OurExTeamMember from "@/components/OurExTeamMember";
 
 const HomePage = () => {
+  const {
+    advisorData,
+    teamMemberData,
+    eventData,
+    blogData,
+    reviewData,
+    loading,
+    error,
+  } = useContext(HomePageDataContext);
+
   return (
     <>
       <Hero />
@@ -19,15 +30,18 @@ const HomePage = () => {
       <AboutPage />
       <WhyJoin />
       <div className="mt-16"></div>
-      <OurAdvisors />
-      <OurExTeamMember />
-      <OurTeamMember />
+      <OurAdvisors advisorData={advisorData} loading={loading} error={error} />
+      <OurTeamMember
+        teamMemberData={teamMemberData}
+        loading={loading}
+        error={error}
+      />
       <div className="mt-16"></div>
-      <EventPage />
+      <EventPage eventData={eventData} loading={loading} error={error} />
       <div className="mt-16"></div>
-      <BlogPage />
+      <BlogPage blogData={blogData} loading={loading} error={error} />
       <div className="mt-16"></div>
-      <Testimonials />
+      <Testimonials reviewData={reviewData} loading={loading} error={error} />
       <div className="mt-16"></div>
       <Faqs />
       <div className="mt-16"></div>

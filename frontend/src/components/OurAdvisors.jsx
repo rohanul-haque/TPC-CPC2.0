@@ -7,49 +7,16 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AppContext } from "@/contexts/AppContext";
-import axios from "axios";
 import Autoplay from "embla-carousel-autoplay";
-import { useContext, useEffect, useState } from "react";
 import SectionTitle from "./SectionTitle";
 
-const OurAdvisors = () => {
-  const [advisorData, setAdvisorData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  const { backendUrl } = useContext(AppContext);
-
-  const fetchAdvisorData = async () => {
-    setLoading(true);
-    try {
-      const { data } = await axios.get(`${backendUrl}/advisor/list`);
-
-      if (data.success && data.advisors?.length > 0) {
-        setAdvisorData(data.advisors.reverse());
-        setError("");
-      } else {
-        setAdvisorData([]);
-        setError(
-          "🚫 No advisors found yet! 🌟 Stay tuned, new mentors will join soon 🎉"
-        );
-      }
-    } catch (err) {
-      setAdvisorData([]);
-      setError("🚫 Failed to fetch advisor data. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchAdvisorData();
-  }, []);
+const OurAdvisors = ({ advisorData = [], loading, error }) => {
+  const currentYear = new Date().getFullYear();
 
   return (
-    <section className="mt-6 px-10">
+    <section className="mt-6 lg:px-10">
       <SectionTitle
-        title={`Meet Our Advisors ${new Date().getFullYear()} 🌟🧑‍💼`}
+        title={`Meet Our Advisors ${currentYear} 🌟🧑‍💼`}
         paragraph="Learn from experienced mentors 💡 who guide you every step. Gain knowledge 📚, inspiration ✨, and support 🚀 to grow your skills and career."
       />
 
@@ -72,11 +39,17 @@ const OurAdvisors = () => {
         </Carousel>
       )}
 
-      {!loading && error && (
+      {!loading && (error || advisorData.length === 0) && (
         <div className="w-full flex justify-center items-center py-10">
           <Error
-            title={"🚫 No advisors found yet!"}
-            description="🌟 Stay tuned, new mentors will join soon 🎉"
+            title={
+              error ? "🚫 No advisors found yet!" : "🚫 No advisors found yet!"
+            }
+            description={
+              error
+                ? "🌟 Stay tuned, new mentors will join soon 🎉"
+                : "🌟 Stay tuned, new mentors will join soon 🎉"
+            }
           />
         </div>
       )}
@@ -84,27 +57,35 @@ const OurAdvisors = () => {
       {!loading && !error && advisorData.length > 0 && (
         <Carousel
           className="w-full mt-10"
-          plugins={[Autoplay({ delay: 2000 })]}
+          plugins={[Autoplay({ delay: 2500 })]}
         >
           <CarouselContent>
-            {advisorData.map((advisor) => (
-              <CarouselItem
-                key={advisor._id}
-                className="pl-6 md:basis-1/2 lg:basis-1/3"
-              >
-                <div className="flex flex-col items-center p-6 rounded-2xl text-center border border-gray-400/50 dark:border-gray-500/50 backdrop-blur-sm">
-                  <img
-                    className="w-28 h-28 object-cover rounded-full border-4 border-blue-500 shadow-md mb-4"
-                    src={advisor?.advisorProfile}
-                    alt={advisor?.name}
-                  />
-                  <h1 className="text-lg font-semibold uppercase">
-                    {advisor?.name}
-                  </h1>
-                  <span>{advisor?.role}</span>
-                </div>
-              </CarouselItem>
-            ))}
+            {advisorData
+              .slice()
+              .reverse()
+              .map((advisor) => {
+                return (
+                  <CarouselItem
+                    key={advisor?._id}
+                    className="pl-6 md:basis-1/2 lg:basis-1/3"
+                  >
+                    <div className="flex flex-col items-center p-6 rounded-2xl text-center border border-gray-400/50 dark:border-gray-500/50 backdrop-blur-sm">
+                      <img
+                        className="w-28 h-28 object-cover rounded-full border-4 border-blue-500 shadow-md mb-4"
+                        src={advisor?.advisorProfile}
+                        alt={advisor?.name}
+                        loading="lazy"
+                      />
+                      <h1 className="text-lg font-semibold uppercase">
+                        {advisor?.name}
+                      </h1>
+                      <span className="text-sm opacity-80">
+                        {advisor?.position}
+                      </span>
+                    </div>
+                  </CarouselItem>
+                );
+              })}
           </CarouselContent>
           <CarouselPrevious className="hidden lg:flex" />
           <CarouselNext className="hidden lg:flex" />
