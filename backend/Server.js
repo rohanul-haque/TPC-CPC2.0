@@ -11,6 +11,7 @@ import AdvisorRoute from "./src/routes/AdvisorRoute.js";
 import BlogRoute from "./src/routes/BlogRoute.js";
 import EventRoute from "./src/routes/EventRoute.js";
 import ExTeamRoute from "./src/routes/ExTeamRoute.js";
+import HomePageRoute from "./src/routes/HomePageRoute.js";
 import ReviewRoute from "./src/routes/ReviewRoute.js";
 import TeamRoute from "./src/routes/TeamRoute.js";
 import UserRoute from "./src/routes/UserRoute.js";
@@ -42,6 +43,7 @@ app.use(
 );
 
 app.use(express.json());
+app.use("/api/v1/home-page", HomePageRoute);
 app.use("/api/v1/admin", AdminRouter);
 app.use("/api/v1/user", UserRoute);
 app.use("/api/v1/advisor", AdvisorRoute);

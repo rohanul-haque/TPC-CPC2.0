@@ -37,7 +37,9 @@ const AppLayout = ({ children }) => {
         />
         <div className="relative z-40">
           <Navbar />
-          <div className="container mx-auto px-4 md:px-10">{children}</div>
+          <div className="container mx-auto px-4 md:px-10 overflow-hidden">
+            {children}
+          </div>
           <Footer />
         </div>
       </div>

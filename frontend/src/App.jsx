@@ -1,5 +1,7 @@
-import { useEffect } from "react";
-import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import { useContext, useEffect } from "react";
+import { Route, Routes, useNavigate } from "react-router-dom";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { HomePageDataContext } from "./contexts/HomePageDataContext";
 import AppLayout from "./layouts/AppLayout";
 import AboutPage from "./pages/AboutPage";
 import AddReviewPage from "./pages/AddReviewPage";
@@ -17,16 +19,12 @@ import TeamPage from "./pages/TeamPage";
 import Testimonials from "./pages/Testimonials";
 import ViewBlogPage from "./pages/ViewBlogPage";
 
-const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
-  return children;
-};
-
 const App = () => {
   const navigate = useNavigate();
+
+  const { eventData, blogData, reviewData, loading, error } =
+    useContext(HomePageDataContext);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     const path = window.location.pathname;
@@ -46,11 +44,30 @@ const App = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/teams" element={<TeamPage />} />
-        <Route path="/blogs" element={<BlogPage />} />
+        <Route
+          path="/blogs"
+          element={
+            <BlogPage blogData={blogData} loading={loading} error={error} />
+          }
+        />
         <Route path="/blog/:id" element={<ViewBlogPage />} />
-        <Route path="/events" element={<EventPage />} />
+        <Route
+          path="/events"
+          element={
+            <EventPage eventData={eventData} loading={loading} error={error} />
+          }
+        />
         <Route path="/faqs" element={<Faqs />} />
-        <Route path="/testimonials" element={<Testimonials />} />
+        <Route
+          path="/testimonials"
+          element={
+            <Testimonials
+              reviewData={reviewData}
+              loading={loading}
+              error={error}
+            />
+          }
+        />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />

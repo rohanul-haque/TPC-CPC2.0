@@ -22,10 +22,10 @@ export const assets = {
 
 export const navLink = [
   { id: 1, name: "Home", path: "/" },
-  { id: 2, name: "About", path: "/about" },
-  { id: 3, name: "Teams", path: "/teams" },
-  { id: 4, name: "Events", path: "/events" },
-  { id: 5, name: "Blogs", path: "/blogs" },
+  { id: 2, name: "Teams", path: "/teams" },
+  { id: 3, name: "Events", path: "/events" },
+  { id: 4, name: "Workshop", path: "/workshop" },
+  { id: 5, name: "Leaderboard", path: "/leaderboard" },
 ];
 
 export const counterNumber = [
